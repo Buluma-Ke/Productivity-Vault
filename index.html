@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">    
+    <title>Productivity Vault</title>
+</head>
+<body>
+
+    <!--APP WRAPPER-->
+    <div id="app">
+
+        <!--APP HEADER-->
+        <header class="app-header">
+            <h1>Productivity Vault</h1>
+        </header>
+        
+        <!--SIDEBAR-->
+        <aside class="sidebar">
+
+            <section class="sidebar-section">
+                <h2>Performance</h2>
+                <ul>
+                    <li>Report</li>
+                    <li>Weekly Overview</li>
+                    <li>Overdue Tasks</li>
+                    <li>Upcoming Tasks</li>
+                </ul>
+            </section>
+
+            <!--QUICK ACTION-->
+            <section class="sidebar-section">
+                <h2>Quick Action</h2>
+                <button>Add New Task</button>
+                <button>Add New Project</button>
+                <button>Add New Habit</button>
+            </section>
+
+            <!--NAVIGATION-->
+            <section class="sidebar-section">
+                <h2>Navigation</h2>
+                <ul>
+                    <li>Habit Report</li>
+                    <li>Archive Habits</li>
+                    <li>Goals Setting</li>
+                    <li>Habit logs</li>
+                </ul>
+            </section>
+
+            <!--HABIT STATS-->
+            <section class="sidebar-section">
+                <h2>Habit Statistics</h2>
+                <div class="habit-stat">Deep Work</div>
+                <div class="habit-stat">Workout</div>
+                <div class="habit-stat">Reading</div>
+            </section>
+
+        </aside>
+
+
+        <!--MAIN CONTENT-->
+        <main class="main-content">
+
+            <!--HABIT STREAK & GOALS-->
+            <section class="panel">
+                <header>
+                    <h2>Habit Streak & Goal Tracking</h2>
+                </header>
+
+                <div class="habit-grid">
+
+                    <article class="habit-card">
+                        <h3>6 Hr Deep Work</h3>
+                        <div class="habit-calender"></div>
+                        <p>Progress</p>
+                        <p>Streak: 1 day</p>
+                    </article>
+                    
+                    <article class="habit-card">
+                        <h3>Eat Healthy</h3>
+                        <div class="habit-calender"></div>
+                        <p>Progress</p>
+                        <p>Streak: 1 day</p>
+                    </article>
+
+                    <article class="habit-card">
+                        <h3>Reading</h3>
+                        <div class="habit-calender"></div>
+                        <p>Progress</p>
+                        <p>Streak: 1 day</p>
+                    </article>
+
+                    <article class="habit-card">
+                        <h3>Workout</h3>
+                        <div class="habit-calender"></div>
+                        <p>Progress</p>
+                        <p>Streak: 1 day</p>
+                    </article>
+
+                </div>
+            </section>
+
+            <!--DAILY HABIT TRACKING-->
+            <section class="panel">
+                <header>
+                    <h2>Daily Habit Tracking</h2>
+                </header>
+
+                <div class="habit-grid">
+                    <article class="habit-card">
+                        <h3>Deep Work</h3>
+                        <button>Mark as Complete</button>
+                        <div class="habit-calender"></div>
+                    </article>
+
+                    <article class="habit-card">
+                        <h3>Workout</h3>
+                        <button>Mark as Complete</button>
+                        <div class="habit-calender"></div>
+                    </article>
+
+                    <article class="habit-card">
+                        <h3>Eat Healthy</h3>
+                        <button>Mark as Complete</button>
+                        <div class="habit-calender"></div>
+                    </article>
+
+                    <article class="habit-card">
+                        <h3>Reading</h3>
+                        <button>Mark as Complete</button>
+                        <div class="habit-calender"></div>
+                    </article>
+                </div>
+
+            </section>
+
+
+            <!--TASKS-->
+            <section class="panel">
+                <header>
+                    <h2>Tasks</h2>
+                </header>
+
+                <div class="task-columns">
+                    <div class="task-column">
+                        <h3>Today</h3>
+                        <div class="task-card">Email</div>
+                        <div class="task-card">Content Creation</div>
+                    </div>
+
+                    <div class="task-column">
+                        <h3>Inbox</h3>
+                        <div class="task-card">Learn Framer</div>
+                    </div>
+
+                    <div class="task-column">
+                        <h3>Completed</h3>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!--PROJECT MANAGER-->
+            <section class="panel">
+                <header>
+                    <h2>Project Manager</h2>
+                </header>
+
+                <div class="project-grid">
+                    <article class="project-card">
+                        <h3>Notion Template</h3>
+                        <p>Tasks: 4</p>
+                        <p>Status: Completed</p>
+                    </article>
+
+                    <article class="project-card">
+                        <h3>Content Creation</h3>
+                        <p>Tasks: 4</p>
+                        <p>Status: Completed</p>
+                    </article>
+
+                    <article class="project-card">
+                        <h3>Learn Framer</h3>
+                        <p>Tasks: 4</p>
+                        <p>Status: Completed</p>
+                    </article>
+                </div>
+
+            </section>
+
+
+            <!--CALENDAR-->
+            <section class="panel">
+                <header>
+                    <h2>Weekly & Monthly Calendar</h2>
+                </header>
+
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <span>Mon</span>
+                        <span>Tue</span>
+                        <span>Wed</span>
+                        <span>Thu</span>
+                        <span>Fri</span>
+                        <span>Sat</span>
+                        <span>Sun</span>
+                    </div>
+
+                    <div class="calendar-grid">
+                        <div class="calendar-day"></div>
+                        <div class="calendar-day"></div>
+                        <div class="calendar-day active"></div>
+                        <div class="calendar-day"></div>
+                        <div class="calendar-day"></div>
+                        <div class="calendar-day"></div>
+                        <div class="calendar-day"></div>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
