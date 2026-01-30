@@ -3,38 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">    
     <title>Productivity Vault</title>
 </head>
 <body>
+    <!--APP HEADER-->
+        <h1 class="app-header">Productivity Vault</h1>
 
     <!--APP WRAPPER-->
     <div id="app">
-
-        <!--APP HEADER-->
-        <header class="app-header">
-            <h1>Productivity Vault</h1>
-        </header>
         
         <!--SIDEBAR-->
         <aside class="sidebar">
 
             <section class="sidebar-section">
-                <h2>Performance</h2>
-                <ul>
-                    <li>Report</li>
-                    <li>Weekly Overview</li>
-                    <li>Overdue Tasks</li>
-                    <li>Upcoming Tasks</li>
-                </ul>
+                <header>
+                    <h2>Performance</h2>
+                </header>
+                <header>
+                    <h3>Report</h3>
+                </header>
+                <div class="performance-report">
+                    <ul>
+                        <li>Report</li>
+                        <li>Weekly Overview</li>
+                        <li>Overdue Tasks</li>
+                        <li>Upcoming Tasks</li>
+                    </ul>
+                </div>
             </section>
 
             <!--QUICK ACTION-->
             <section class="sidebar-section">
-                <h2>Quick Action</h2>
+                <header>
+                    <h2>Quick Action</h2>
+                </header>
                 <button>Add New Task</button>
                 <button>Add New Project</button>
                 <button>Add New Habit</button>
@@ -42,7 +48,9 @@
 
             <!--NAVIGATION-->
             <section class="sidebar-section">
-                <h2>Navigation</h2>
+                <header>
+                    <h2>Navigation</h2>
+                </header>
                 <ul>
                     <li>Habit Report</li>
                     <li>Archive Habits</li>
@@ -53,7 +61,13 @@
 
             <!--HABIT STATS-->
             <section class="sidebar-section">
-                <h2>Habit Statistics</h2>
+                <header>
+                    <h2>Habit Statistics</h2>
+                </header>
+                <header>
+                    <h3>Habit stats</h3>
+                </header>
+
                 <div class="habit-stat">Deep Work</div>
                 <div class="habit-stat">Workout</div>
                 <div class="habit-stat">Reading</div>
@@ -70,33 +84,44 @@
                 <header>
                     <h2>Habit Streak & Goal Tracking</h2>
                 </header>
+                <header>
+                    <h3>Habits</h3>
+                </header>
 
                 <div class="habit-grid">
 
                     <article class="habit-card">
-                        <h3>6 Hr Deep Work</h3>
-                        <div class="habit-calender"></div>
+                        <h4>6 Hr Deep Work</h4>
+                        <div class="habit-calender" id="days"></div>
+                        <input type="checkbox" id="completedToday">
+                        <label for="completedToday">Completed Today</label>
                         <p>Progress</p>
                         <p>Streak: 1 day</p>
                     </article>
                     
                     <article class="habit-card">
-                        <h3>Eat Healthy</h3>
-                        <div class="habit-calender"></div>
+                        <h4>Eat Healthy</h4>
+                        <div class="habit-calender" id="days"></div>
+                        <input type="checkbox" id="completedToday">
+                        <label for="completedToday">Completed Today</label>
                         <p>Progress</p>
                         <p>Streak: 1 day</p>
                     </article>
 
                     <article class="habit-card">
-                        <h3>Reading</h3>
-                        <div class="habit-calender"></div>
+                        <h4>Reading</h4>
+                        <div class="habit-calender" id="days"></div>
+                        <input type="checkbox" id="completedToday">
+                        <label for="completedToday">Completed Today</label>
                         <p>Progress</p>
                         <p>Streak: 1 day</p>
                     </article>
 
                     <article class="habit-card">
-                        <h3>Workout</h3>
-                        <div class="habit-calender"></div>
+                        <h4>Workout</h4>
+                        <div class="habit-calender" id="days"></div>
+                        <input type="checkbox" id="completedToday">
+                        <label for="completedToday">Completed Today</label>
                         <p>Progress</p>
                         <p>Streak: 1 day</p>
                     </article>
@@ -109,30 +134,48 @@
                 <header>
                     <h2>Daily Habit Tracking</h2>
                 </header>
+                <header>
+                    <h3>Habits</h3>
+                </header>
 
                 <div class="habit-grid">
                     <article class="habit-card">
-                        <h3>Deep Work</h3>
+                        <h4>Deep Work</h4>
                         <button>Mark as Complete</button>
-                        <div class="habit-calender"></div>
+                        <div class="habit-graph-wrapper">
+                            <div class="day-labels">
+                                <span>Mon</span>
+                                <span>Tue</span>
+                                <span>Wed</span>
+                                <span>Thu</span>
+                                <span>Fri</span>
+                                <span>Sat</span>
+                                <span>Sun</span>
+                            </div>
+                            <div id="track-grid" class="track-grid"></div>
+                        </div>
+                        <p class="streak-text">Streak: <span id="streak-count"></span>1</p>day
                     </article>
 
                     <article class="habit-card">
-                        <h3>Workout</h3>
+                        <h4>Workout</h4>
                         <button>Mark as Complete</button>
                         <div class="habit-calender"></div>
+                        <p>Streak: 1 day</p>
                     </article>
 
                     <article class="habit-card">
-                        <h3>Eat Healthy</h3>
+                        <h4>Eat Healthy</h4>
                         <button>Mark as Complete</button>
                         <div class="habit-calender"></div>
+                        <p>Streak: 1 day</p>
                     </article>
 
                     <article class="habit-card">
-                        <h3>Reading</h3>
+                        <h4>Reading</h4>
                         <button>Mark as Complete</button>
                         <div class="habit-calender"></div>
+                        <p>Streak: 1 day</p>
                     </article>
                 </div>
 
@@ -147,18 +190,18 @@
 
                 <div class="task-columns">
                     <div class="task-column">
-                        <h3>Today</h3>
+                        <h4>Today</h4>
                         <div class="task-card">Email</div>
                         <div class="task-card">Content Creation</div>
                     </div>
 
                     <div class="task-column">
-                        <h3>Inbox</h3>
+                        <h4>Inbox</h4>
                         <div class="task-card">Learn Framer</div>
                     </div>
 
                     <div class="task-column">
-                        <h3>Completed</h3>
+                        <h4>Completed</h4>
                     </div>
                 </div>
 
@@ -173,19 +216,19 @@
 
                 <div class="project-grid">
                     <article class="project-card">
-                        <h3>Notion Template</h3>
+                        <h4>Notion Template</h4>
                         <p>Tasks: 4</p>
                         <p>Status: Completed</p>
                     </article>
 
                     <article class="project-card">
-                        <h3>Content Creation</h3>
+                        <h4>Content Creation</h4>
                         <p>Tasks: 4</p>
                         <p>Status: Completed</p>
                     </article>
 
                     <article class="project-card">
-                        <h3>Learn Framer</h3>
+                        <h4>Learn Framer</h4>
                         <p>Tasks: 4</p>
                         <p>Status: Completed</p>
                     </article>
@@ -227,6 +270,6 @@
         </main>
 
     </div>
-
+<script src="js/index.js"></script>
 </body>
 </html>
