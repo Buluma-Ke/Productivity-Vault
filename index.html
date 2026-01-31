@@ -41,9 +41,10 @@
                 <header>
                     <h2>Quick Action</h2>
                 </header>
-                <button>Add New Task</button>
-                <button>Add New Project</button>
-                <button>Add New Habit</button>
+                <button>+ Add New Task</button>
+                <button>+ Add New Project</button>
+                <button id="openHabitModal">+ Add New Habit</button>
+
             </section>
 
             <!--NAVIGATION-->
@@ -88,10 +89,11 @@
                     <h3>Habits</h3>
                 </header>
 
-                <div class="habit-grid">
+                <div class="habit_grid" id="habit_grid">
 
                     <article class="habit-card">
                         <h4>6 Hr Deep Work</h4>
+                        <p>Weekly: 7x</p>
                         <div class="habit-calender" id="days"></div>
                         <input type="checkbox" id="completedToday">
                         <label for="completedToday">Completed Today</label>
@@ -101,6 +103,7 @@
                     
                     <article class="habit-card">
                         <h4>Eat Healthy</h4>
+                        <p>Weekly: 7x</p>
                         <div class="habit-calender" id="days"></div>
                         <input type="checkbox" id="completedToday">
                         <label for="completedToday">Completed Today</label>
@@ -110,6 +113,7 @@
 
                     <article class="habit-card">
                         <h4>Reading</h4>
+                        <p>Weekly: 7x</p>
                         <div class="habit-calender" id="days"></div>
                         <input type="checkbox" id="completedToday">
                         <label for="completedToday">Completed Today</label>
@@ -119,6 +123,7 @@
 
                     <article class="habit-card">
                         <h4>Workout</h4>
+                        <p>Weekly: 7x</p>
                         <div class="habit-calender" id="days"></div>
                         <input type="checkbox" id="completedToday">
                         <label for="completedToday">Completed Today</label>
@@ -154,27 +159,60 @@
                             </div>
                             <div id="track-grid" class="track-grid"></div>
                         </div>
-                        <p class="streak-text">Streak: <span id="streak-count"></span>1</p>day
+                        <p class="streak-text">Streak: <span id="streak-count"></span>1 day</p>
                     </article>
 
                     <article class="habit-card">
                         <h4>Workout</h4>
                         <button>Mark as Complete</button>
-                        <div class="habit-calender"></div>
+                         <div class="habit-graph-wrapper">
+                            <div class="day-labels">
+                                <span>Mon</span>
+                                <span>Tue</span>
+                                <span>Wed</span>
+                                <span>Thu</span>
+                                <span>Fri</span>
+                                <span>Sat</span>
+                                <span>Sun</span>
+                            </div>
+                            <div id="track-grid" class="track-grid"></div>
+                        </div>
                         <p>Streak: 1 day</p>
                     </article>
 
                     <article class="habit-card">
                         <h4>Eat Healthy</h4>
                         <button>Mark as Complete</button>
-                        <div class="habit-calender"></div>
+                        <div class="habit-graph-wrapper">
+                            <div class="day-labels">
+                                <span>Mon</span>
+                                <span>Tue</span>
+                                <span>Wed</span>
+                                <span>Thu</span>
+                                <span>Fri</span>
+                                <span>Sat</span>
+                                <span>Sun</span>
+                            </div>
+                            <div id="track-grid" class="track-grid"></div>
+                        </div>
                         <p>Streak: 1 day</p>
                     </article>
 
                     <article class="habit-card">
                         <h4>Reading</h4>
                         <button>Mark as Complete</button>
-                        <div class="habit-calender"></div>
+                         <div class="habit-graph-wrapper">
+                            <div class="day-labels">
+                                <span>Mon</span>
+                                <span>Tue</span>
+                                <span>Wed</span>
+                                <span>Thu</span>
+                                <span>Fri</span>
+                                <span>Sat</span>
+                                <span>Sun</span>
+                            </div>
+                            <div id="track-grid" class="track-grid"></div>
+                        </div>
                         <p>Streak: 1 day</p>
                     </article>
                 </div>
@@ -269,6 +307,33 @@
 
         </main>
 
+    </div>
+    <!--Add Habit form-->
+    <div class="modal" id="habitModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeHabitModal">&times;</span>
+
+            <h2>Add Habit</h2>
+
+            <form id="habitForm">
+                <label>
+                    Habit name
+                    <input type="text" id="habitName" required/>
+                </label>
+
+                <label>
+                    Start date
+                    <input type="date" id="habitStartDate" required/>
+                </label>
+
+                <label>
+                    Times per Weekly
+                    <input type="number" id="habitFrequency" min="1" max="7" required/>
+                </label>
+
+                <button type="submit">Save new Habit</button>
+            </form>
+        </div>
     </div>
 <script src="js/index.js"></script>
 </body>
