@@ -90,24 +90,19 @@ header {
 }
 .habit_grid {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     justify-content: left;
+    align-items: stretch;
     max-width: 100%;
-    overflow-x: auto;
-}
-.habit-grid {
-    display: flex;
-    gap: 1rem;
-    justify-content: left;
-    max-width: 100%;
-    overflow-x: auto;
 }
 .habit-card {
     background-color: #212631;
     border-radius: 0.5em;
-    flex: 1;
     min-height: 100%;
     padding: 0.5rem;
+    flex-wrap: 1 1 300px;
+    min-width: 225px;
 }
 .task-columns {
     display: flex;
