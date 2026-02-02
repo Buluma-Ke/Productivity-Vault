@@ -1,9 +1,39 @@
+import { addHabit } from "./state.js"; 
+import { render } from "./render.js";
+import { loadState } from "./storage.js";
+import { state } from "./state.js";
+
+
 const today = new Date();
 const year = today.getFullYear();
 
 
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded',function () {
+
+    Object.assign(state, loadState());
+    render();
+
+    const form = document.getElementById("habitForm");
+
+    console.log("form found:", form)
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const name = form.habitName.value;
+        const startDate = form.startDate.value;
+        const frequency = Number(form.frequency.value);
+
+        addHabit({ name, startDate, frequency});
+
+        render();
+        form.reset();
+    });
+
+
+
+
     const date = new Date();
     const today = new Date();
     console.log(today)
@@ -128,22 +158,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
-// ADD NEW HABIT
-//------------------------------------------
+// // ADD NEW HABIT
+// //------------------------------------------
 
-const app = document.getElementById("app");
-const modal = document.getElementById('habitModal');
-const openBtn = document.getElementById('openHabitModal');
-const closeBtn = document.getElementById('closeHabitModal');
-const startDateInput = document.getElementById('habitStartDate');
+ const app = document.getElementById("app");
+ const modal = document.getElementById('habitModal');
+ const openBtn = document.getElementById('openHabitModal');
+ const closeBtn = document.getElementById('closeHabitModal');
+// const startDateInput = document.getElementById('habitStartDate');
 const form = document.getElementById('habitForm');
 
 
-// Toggle blur
+// // Toggle blur
 
-//default start date today
-const dateToday = new Date().toISOString().split("T")[0]; 
-startDateInput.value = dateToday;                         
+// //default start date today
+// const dateToday = new Date().toISOString().split("T")[0]; 
+// startDateInput.value = dateToday;                         
 
 openBtn.addEventListener("click", () => {
     modal.style.display = "flex";
