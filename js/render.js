@@ -1,12 +1,49 @@
 import {state} from "./state.js";
 
+
+
+//---------------------------------------
+// Cache Daily tracking grid onfirst load
+
+let dayLabelsTemplate = null;
+
+function cacheDayLabelsTemplate(){
+    if(!dayLabelsTemplate) {
+    const template = document.getElementById("day-labels-template");
+    if(template) {
+        dayLabelsTemplate = template.content.cloneNode(true);
+    }
+    }
+}
+// --------------------------------------
+
+
+export function showHabitModal(){
+    document.getElementById('habitModal').style.display = "flex";
+    document.getElementById("app").classList.add("blurred");
+}
+
+export function hideHabitModal(){
+    document.getElementById('habitModal').style.display = "none";
+    document.getElementById("app").classList.remove("blurred");
+}
+
+
+
+// Main render function
 export function render(){
+    cacheDayLabelsTemplate(); // Cache template on first render
     renderHabits();
 }
+
+
+
 
 function renderHabits() {
     const habitGrid = document.getElementById("habit_grid");
     const trackGrid = document.getElementById("trackhabit_grid");
+
+    if(!habitGrid || !trackGrid) return;
 
     habitGrid.innerHTML = "";
     trackGrid.innerHTML = "";
@@ -23,23 +60,157 @@ function renderHabitCard(habit, container){
 
     card.innerHTML = `
         <h4>${habit.name}</h4>
-        <div class="frequency">Weekly: ${habit.timesPerWeek}x</div>
+        <div class="frequency">Weekly: ${habit.frequency}x</div>
         <div class="habit-calender"></div>
     `;
 
     container.appendChild(card);
+
+    // Render calender calender grid inside the card
+    const calendarGrid = card.querySelector(".habit-calender");
+    renderCalendar(calendarGrid, habit);
+
 }
 
+//------------------------------
+// habit tracking grid (heatmap)
+// -----------------------------
+
+
+// day labels
+function cloneDayLabels(){
+
+    if (dayLabelsTemplate){
+        return dayLabelsTemplate.cloneNode(true);
+    }
+   // console.log("template found:", dayLabelsTemplate)
+   console.error("Day label template not found");
+}
+
+const today = new Date();
+const todaysDate = today.toLocaleDateString('en-GB', {
+    day   : 'numeric',
+    month : 'long',
+    year  : 'numeric'
+});
+
 function renderHabitTrack(habit, container){
-    const card = document.createElement("div");
+    const card = document.createElement("article");
     card.className = "habit-card";
+
+    // const title = document.createElement("h4");
+    // title.textContent = habit.name;
+
+    // const button = document.createElement("button");
+    // button.id
+    // button.textContent = "Mark as complete";
 
     card.innerHTML = `
         <h4>${habit.name}</h4>
-        <button data-id="${habit.name}">Mark as Complete</button>
-        <div class="track-grid"></div>
-    
+        <button ${habit.id}>Mark as complete</button>
     `;
 
-    container.appendChild(card)
+
+    const Wfrequency = document.createElement('p');
+    Wfrequency.textContent = `Weekly:${habit.frequency}x`;
+
+    const date = document.createElement('p');
+    date.textContent = `Today is: ${todaysDate}`;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "habit-graph-wrapper";
+
+    const grid = document.createElement("div");
+    grid.className = "track-grid";
+
+    wrapper.appendChild(cloneDayLabels());
+    wrapper.appendChild(grid);
+
+    // card.appendChild(title);
+    // card.appendChild(button);
+    card.appendChild(Wfrequency);
+    card.appendChild(date);
+    card.appendChild(wrapper); // template
+
+
+    container.appendChild(card);
+
+    //Render tracking grid inside this card
+    renderGrid(grid, habit);
 }
+
+
+// ----------------------
+// Calendar rendering
+// ----------------------
+
+function renderCalendar(container, habit) {
+    if(!container) return;
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    const firstday = new Date(year, month, 1);
+    const lastday = new Date(year, month + 1, 0);
+    const daysInMonth = lastday.getDate();
+    const firstDayIndex = firstday.getDay();
+
+    container.innerHTML = "";
+
+    // Add empty divs for alignment
+    for (let i = 1; i <= firstDayIndex; i++){
+        const spacer = document.createElement("div");
+        spacer.className = "habit-day";
+        container.appendChild(spacer);
+    }
+
+    // Add days
+    for (let i = 1; i <= daysInMonth; i++){
+        const dayDiv = document.createElement("div");
+        dayDiv.className = "habit-day";
+        dayDiv.dataset.day = i;
+        dayDiv.textContent = i;
+
+        // Highlight today
+
+        if (
+            i === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear()
+        ){
+            dayDiv.classList.add("today");
+        }
+
+        container.appendChild(dayDiv);
+    }
+}
+
+// -------------------------
+// Tracking grid rendering
+// -------------------------
+function renderGrid(container, habit){
+    if(!container) return;
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const startOfYear = new Date(year, 0, 1);
+    const diffMs = today - startOfYear;
+    const dayOfYear = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+
+    container.innerHTML = "";
+
+    for (let i = 1; i <= dayOfYear; i++){
+        const day = document.createElement("div");
+        day.className = "day";
+
+        //if the day is completed for ths habit, highlight it
+        if (habit.completions.includes(i)){
+            day.classList.add("day-completed");
+        }
+
+        container.appendChild(day);
+    }
+}
+
+

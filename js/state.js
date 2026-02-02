@@ -17,3 +17,7 @@ export function addHabit({ name, startDate, frequency }) {
     state.habits.push(Habit);
     saveState(state);
 }
+
+export function addCompletions(something) {
+    return true;
+}
