@@ -5,6 +5,10 @@ export function saveState(state) {
 }
 
 export function loadState() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data): {habits: []};
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data): {habits: []};
+    }catch{
+        return {habits: []};
+    }
 }

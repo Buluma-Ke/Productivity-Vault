@@ -1,8 +1,10 @@
-import { saveState } from "./storage.js"
+import { saveState, loadState } from "./storage.js"
 
-export const state = {
-    habits: []
-};
+// export const state = {
+//     habits: []
+// };
+
+export const state = loadState();
 
 
 export function addHabit({ name, startDate, frequency }) {
@@ -32,3 +34,4 @@ export function markComplete(habitId) {
         saveState(state);
     }
 }
+

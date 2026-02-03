@@ -269,3 +269,13 @@ input {
     border-radius: 0.4rem;
     border: 1px solid ;
 }
+
+
+/* Progress bar */
+.cntainer.progress-bar {
+    position: absolute;
+    height: 100%;
+    background-color: #d88a4d;
+    width: 0%;
+    transition: width 0.4s ease;
+}

@@ -1,4 +1,5 @@
 import {state} from "./state.js";
+import {getStreak} from "./helpers.js"
 
 
 
@@ -65,8 +66,13 @@ function renderHabitCard(habit, container){
         <div class="habit-calender"></div>
         <div>
             <p>Completed Today</p>
-            <div>Progress</div>
-            <p>Streak 🔥1day</p>
+            <div class="progress-div">
+                Progress - <div class="cntainer">
+                                <div class="progress-bar" id="myBar"></div>
+                            </div>
+                <p id="label">0%</p>
+            </div>
+            <p>Streak 🔥${getStreak(habit)} days</p>
         </div>
 
         
@@ -193,6 +199,10 @@ function renderCalendar(container, habit) {
         container.appendChild(dayDiv);
     }
 }
+
+
+
+
 
 // -------------------------
 // Tracking grid rendering
