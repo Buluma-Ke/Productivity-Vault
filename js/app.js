@@ -1,4 +1,4 @@
-import { addHabit } from "./state.js"; 
+import { addHabit, markComplete} from "./state.js"; 
 
 import { render, showHabitModal, hideHabitModal } from "./render.js";
 
@@ -14,8 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const newHabitButton = document.getElementById('openHabitModal');
     const closeHabitBtn = document.getElementById('closeHabitModal');
-
-    console.log("newHabitButton found:", newHabitButton)
 
     newHabitButton.addEventListener("click", () => {
         showHabitModal();
@@ -43,36 +41,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         render();
         form.reset();
-});
+        hideHabitModal();
+    });
 
     // Mark day complete
-    
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains("complete-btn")) {
+            // get ID from the data attribute
+            const habitId = e.target.dataset.habitId;
+            markComplete(habitId);
+        }
+        render()
+    })
 
 
 });
 
 
-
-// // Mark day complete
-
-// const markCompleteBtn = document.getElementById('markAsComplete')
-
-// markCompleteBtn.addEventListener("click", () => {
-
-//     // difference in days(including today)
-//     const startOfYear = new Date(year, 0, 1); // jan 1st current year
-
-//     const diffInMs = today - startOfYear;
-
-//     const index_today = Math.floor(diffInMs/(1000 * 60 * 60 * 24)) + 1;
-//     console.log(index_today)
-
-//     const completedDay = document.querySelector('.day')
-
-//     console.log(completedDay[index_today])
-
-
-//     completedDay[index_today].classList.add('day-completed')
-
-// });
 

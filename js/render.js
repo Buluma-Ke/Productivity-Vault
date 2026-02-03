@@ -33,7 +33,8 @@ export function hideHabitModal(){
 // Main render function
 export function render(){
     cacheDayLabelsTemplate(); // Cache template on first render
-    renderHabits();
+    renderHabits()
+    renderGrid();
 }
 
 
@@ -60,8 +61,15 @@ function renderHabitCard(habit, container){
 
     card.innerHTML = `
         <h4>${habit.name}</h4>
-        <div class="frequency">Weekly: ${habit.frequency}x</div>
+        <div class="frequency">🎯 Weekly: ${habit.frequency}x</div>
         <div class="habit-calender"></div>
+        <div>
+            <p>Completed Today</p>
+            <div>Progress</div>
+            <p>Streak 🔥1day</p>
+        </div>
+
+        
     `;
 
     container.appendChild(card);
@@ -107,15 +115,15 @@ function renderHabitTrack(habit, container){
 
     card.innerHTML = `
         <h4>${habit.name}</h4>
-        <button ${habit.id}>Mark as complete</button>
+        <button data-habit-id=${habit.id} class="complete-btn">Mark as complete</button>
     `;
 
 
     const Wfrequency = document.createElement('p');
-    Wfrequency.textContent = `Weekly:${habit.frequency}x`;
+    Wfrequency.textContent = `🎯Weekly:${habit.frequency}x`;
 
     const date = document.createElement('p');
-    date.textContent = `Today is: ${todaysDate}`;
+    date.textContent = `📆Today is: ${todaysDate}`;
 
     const wrapper = document.createElement("div");
     wrapper.className = "habit-graph-wrapper";
@@ -161,7 +169,7 @@ function renderCalendar(container, habit) {
     // Add empty divs for alignment
     for (let i = 1; i <= firstDayIndex; i++){
         const spacer = document.createElement("div");
-        spacer.className = "habit-day";
+        spacer.className = "spacer";
         container.appendChild(spacer);
     }
 
@@ -190,22 +198,44 @@ function renderCalendar(container, habit) {
 // Tracking grid rendering
 // -------------------------
 function renderGrid(container, habit){
-    if(!container) return;
 
+    if(!container) return;
     const today = new Date();
     const year = today.getFullYear();
+    const month = 0
+    const firstday = new Date(year, month, 1);
     const startOfYear = new Date(year, 0, 1);
     const diffMs = today - startOfYear;
     const dayOfYear = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+    const firstDayIndex = firstday.getDay();
 
     container.innerHTML = "";
+
+    // Empty divs for alignment
+    for (let i = 1; i <= firstDayIndex; i++){
+        const spacer = document.createElement("div");
+        spacer.className = "spacer";
+        container.appendChild(spacer);
+        }
 
     for (let i = 1; i <= dayOfYear; i++){
         const day = document.createElement("div");
         day.className = "day";
 
+        // Convert day number to actual date
+        const currentDate = new Date(startOfYear);
+        currentDate.setDate(i);
+
+        const y = currentDate.getFullYear();
+        const m = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const d = String(currentDate.getDate()).padStart(2, '0');
+
+        const dateString = `${y}-${m}-${d}`;
+
         //if the day is completed for ths habit, highlight it
-        if (habit.completions.includes(i)){
+        
+       
+        if (habit.completions.includes(dateString)){
             day.classList.add("day-completed");
         }
 
