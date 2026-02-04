@@ -47,7 +47,7 @@ export function getWeeklProgress(habit) {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0); // remove time (hrs, mns, sec)
-    
+
     let completed = 0;
 
     for (let i = 0; i < 7; i++){
@@ -64,5 +64,19 @@ export function getWeeklProgress(habit) {
         completed: completed,
         total: 7,
         percentage: (completed / 7) * 100
+    }
+}
+
+
+
+export function taskWarning(task){
+    const today = new Date();
+
+    const day = today.toISOString().split("T")[0];
+
+    if(task.dueDate === day){
+        return 'Today !!'
+    } else {
+        return task.dueDate
     }
 }

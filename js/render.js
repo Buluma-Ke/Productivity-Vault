@@ -1,9 +1,9 @@
 import {state} from "./state.js";
-import {getStreak} from "./helpers.js"
+import {getStreak, taskWarning } from "./helpers.js"
 
 
 
-//---------------------------------------
+//-------------------------------------------------------------------
 // Cache Daily tracking grid onfirst load
 
 let dayLabelsTemplate = null;
@@ -16,7 +16,7 @@ function cacheDayLabelsTemplate(){
     }
     }
 }
-// --------------------------------------
+// ------------------------------------------------------------------
 
 
 export function showHabitModal(){
@@ -34,8 +34,9 @@ export function hideHabitModal(){
 // Main render function
 export function render(){
     cacheDayLabelsTemplate(); // Cache template on first render
-    renderHabits()
+    renderHabits();
     renderGrid();
+    renderTasks();
 }
 
 
@@ -75,7 +76,7 @@ function renderHabitCard(habit, container){
             <p>Streak 🔥${getStreak(habit)} days</p>
         </div>
 
-        
+
     `;
 
     container.appendChild(card);
@@ -112,12 +113,6 @@ function renderHabitTrack(habit, container){
     const card = document.createElement("article");
     card.className = "habit-card";
 
-    // const title = document.createElement("h4");
-    // title.textContent = habit.name;
-
-    // const button = document.createElement("button");
-    // button.id
-    // button.textContent = "Mark as complete";
 
     card.innerHTML = `
         <h4>${habit.name}</h4>
@@ -243,8 +238,8 @@ function renderGrid(container, habit){
         const dateString = `${y}-${m}-${d}`;
 
         //if the day is completed for ths habit, highlight it
-        
-       
+
+
         if (habit.completions.includes(dateString)){
             day.classList.add("day-completed");
         }
@@ -254,3 +249,49 @@ function renderGrid(container, habit){
 }
 
 
+// ---------------------------
+// TASKS
+// ---------------------------
+
+function renderTasks() {
+    const taskColumns = document.getElementById("task-grid");
+
+    if(!taskColumns) return;
+
+    taskColumns.innerHTML = "";
+
+    state.tasks.forEach(task => {
+        renderTaskCard(task, taskColumns);
+    });
+}
+
+
+
+// Task Cards
+
+export function showTaskModal(){
+    console.log("Task!")
+    document.getElementById('taskModal').style.display = "flex";
+    document.getElementById("app").classList.add("blurred");
+}
+
+export function hideTaskModal(){
+    document.getElementById('taskModal').style.display = "none";
+    document.getElementById("app").classList.remove("blurred");
+}
+
+
+function renderTaskCard(task, container){
+    const card = document.createElement("div");
+    card.className = "task-card";
+
+    card.innerHTML = `
+        <h4>🧾 ${task.name}</h4>
+        <button class="start" data-task-id=${task.id}>🔴 Not started</button>
+        <p>📆 Due ${taskWarning(task)}</p>
+        <button class="task-complete">Mark as completed</button>
+
+    `;
+
+    container.appendChild(card);
+}

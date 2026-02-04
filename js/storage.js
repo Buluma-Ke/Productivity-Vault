@@ -7,8 +7,9 @@ export function saveState(state) {
 export function loadState() {
     try {
         const data = localStorage.getItem(STORAGE_KEY);
-        return data ? JSON.parse(data): {habits: []};
+        return data ? JSON.parse(data): {habits: [], tasks: []};
+        console.log("tasks locked in")
     }catch{
-        return {habits: []};
+        return {habits: [], tasks: []};
     }
 }

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">    
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
     <title>Productivity Vault</title>
 </head>
 <body>
@@ -15,7 +15,7 @@
 
     <!--APP WRAPPER-->
     <div id="app">
-        
+
         <!--SIDEBAR-->
         <aside class="sidebar">
 
@@ -41,7 +41,7 @@
                 <header>
                     <h2>📌 QUICK-ACTION</h2>
                 </header>
-                <button>+ Add New Task</button>
+                <button id="openTaskModal">+ Add New Task</button>
                 <button>+ Add New Project</button>
                 <button id="openHabitModal">+ Add New Habit</button>
 
@@ -123,7 +123,7 @@
                     <h2>💾 TASKS</h2>
                 </header>
 
-                <div class="task-columns">
+                <div class="task-columns" id="task-grid">
                     <div class="task-column">
                         <h4>Today</h4>
                         <div class="task-card">Email</div>
@@ -228,6 +228,29 @@
                 </label>
 
                 <button type="submit">Save new Habit</button>
+            </form>
+        </div>
+    </div>
+
+    <!--Add New task form-->
+
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+
+            <h2>Add Task</h2>
+            <form id="taskForm">
+                <label>
+                    Task name
+                    <input type="text" name="taskName" required/>
+                </label>
+
+                <label>
+                    Due date
+                    <input type="date" name="dueDate" required/>
+                </label>
+
+                <button type="submit">Save new Task</button>
             </form>
         </div>
     </div>

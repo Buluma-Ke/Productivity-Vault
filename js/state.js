@@ -1,10 +1,11 @@
 import { saveState, loadState } from "./storage.js"
 
-// export const state = {
-//     habits: []
-// };
+export const state = {
+    habits: [],
+    tasks: []
+};
 
-export const state = loadState();
+// export const state = loadState();
 
 
 export function addHabit({ name, startDate, frequency }) {
@@ -12,7 +13,7 @@ export function addHabit({ name, startDate, frequency }) {
         id: crypto.randomUUID(),
         name,
         startDate,
-        frequency, 
+        frequency,
         completions: []
     };
 
@@ -35,3 +36,30 @@ export function markComplete(habitId) {
     }
 }
 
+
+//----------------
+// TASKS
+//----------------
+
+export function addTask({ name, dueDate }) {
+    const Task = {
+        id: crypto.randomUUID(),
+        name,
+        dueDate,
+        completed: false
+    };
+    console.log(state.tasks);
+    state.tasks.push(Task);
+    saveState(state);
+}
+
+export function markTaskCompleted(taskId) {
+    // Find the Task ID;
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return null;
+
+    if (task.completed){
+        task.completed = true;
+        saveState(state);
+    }
+}
