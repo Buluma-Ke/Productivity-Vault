@@ -1,5 +1,5 @@
 import {state} from "./state.js";
-import {getStreak, taskWarning } from "./helpers.js"
+import {getStreak, taskWarning, getProjectStats } from "./helpers.js"
 
 
 
@@ -37,9 +37,8 @@ export function render(){
     renderHabits();
     renderGrid();
     renderTasks();
+    renderProject();
 }
-
-
 
 
 function renderHabits() {
@@ -52,9 +51,19 @@ function renderHabits() {
     trackGrid.innerHTML = "";
 
     state.habits.forEach(habit => {
-        renderHabitCard(habit, habitGrid)
-        renderHabitTrack(habit, trackGrid)
+        renderHabitCard(habit, habitGrid);
+        renderHabitTrack(habit, trackGrid);
     });
+    const addCard = document.createElement("div");
+ 
+    addCard.className = "habit-card"
+    addCard.innerHTML = `
+        <div>
+            <span style="font-size: 2rem;">+</span>
+            <p>Add New Habit</p>
+        </div>
+    `
+    
 }
 
 function renderHabitCard(habit, container){
@@ -273,6 +282,7 @@ export function showTaskModal(){
     console.log("Task!")
     document.getElementById('taskModal').style.display = "flex";
     document.getElementById("app").classList.add("blurred");
+    populateProjectOptions();
 }
 
 export function hideTaskModal(){
@@ -287,10 +297,91 @@ function renderTaskCard(task, container){
 
     card.innerHTML = `
         <h4>🧾 ${task.name}</h4>
-        <button class="start" data-task-id=${task.id}>🔴 Not started</button>
+        <button class="start" id=${task.id}btn >😡Not started</button>
         <p>📆 Due ${taskWarning(task)}</p>
-        <button class="task-complete">Mark as completed</button>
+        <button class="task-complete" data-id=${task.id} >Mark as completed</button>
 
+    `;
+    if(task.completed === true){
+        const startbtn = card.querySelector(`.start`);
+        startbtn.textContent = "🌺completed";
+        startbtn.style.backgroundColor = "rgba(19, 109, 42, 0.35)";
+    }
+
+    container.appendChild(card);
+}
+
+
+
+
+
+
+// ----------------
+// Projects
+// ----------------
+
+function renderProject() {
+    
+    const projectGrid = document.getElementById("project-grid");
+
+    if(!projectGrid) return;
+
+    projectGrid.innerHTML = "";
+
+    state.projects.forEach(project => {
+        renderprojectCard(project, projectGrid);
+    });
+}
+
+// project tasks
+function populateProjectOptions(){
+    const select = document.getElementById("taskProject");
+    console.log(select);
+    const vault = JSON.parse(localStorage.getItem("productivity-vault"))
+
+    const projects = vault.projects || []; 
+    console.log(projects)
+
+    select.innerHTML = `<option value="">Project</option>`;
+
+    projects.forEach(project => {
+        const option = document.createElement("option");
+        option.value = project.id;
+        console.log(option.value);
+        option.textContent = project.projectName     
+        select.appendChild(option);
+    });
+}
+
+// project modal
+export function showProjectModal(){
+    document.getElementById('projectkModal').style.display = "flex";
+    document.getElementById("app").classList.add("blurred");
+}
+
+export function hideProjectModal(){
+    document.getElementById('projectkModal').style.display = "none";
+    document.getElementById("app").classList.remove("blurred");
+}
+
+// project card
+function renderprojectCard(project, container){
+    const card = document.createElement("div");
+    card.className = "project-card";
+
+    const stats = getProjectStats(project.id)
+
+    card.innerHTML = `
+        <h4>📌 ${project.projectName}</h4>
+        <div class="project-metadata"><p>🕐Total related tasks = ${stats.total}</div>
+        <div class="project-metadata">
+            <p>☘Total incompleted tasks = ${stats.incomplete}</p>
+            <p>🌺Total completed tasks = ${stats.completed}</p>
+        </div>
+        <div>
+        <p>📆 ${stats.daysRemaining} Days to go
+        </div>
+        <button class="project completed">Completed</button>
     `;
 
     container.appendChild(card);

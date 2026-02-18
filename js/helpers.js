@@ -1,3 +1,19 @@
+// Vault Helpers
+
+export function getVault(){
+    return JSON.parse(localStorage.getItem("productivity-vault")) ||
+    {
+        habits: [],
+        projects: [],
+        tasks: []
+    };
+}
+
+export function saveVault(vault){
+    localStorage.setItem("productivity-vault", JSON.stringify(vault));
+}
+
+
 // STREAKS COUNTER
 
 export function getStreak(habit){
@@ -79,4 +95,70 @@ export function taskWarning(task){
     } else {
         return task.dueDate
     }
+}
+
+// -----------------
+// Auto task counts
+// -----------------
+
+function getAllTasks(){
+    const vault = JSON.parse(localStorage.getItem("productivity-vault"));
+     return vault.tasks
+}
+
+// filter tasks that belong to a project
+
+function getProjectById(projectId) {
+  const vault = getVault(); // your central object
+  return vault.projects.find(p => p.id === projectId);
+}
+
+function getDaysRemaining(deadline) {
+  if (!deadline) return null;
+
+  const today = new Date();
+  const due = new Date(deadline);
+
+  // Normalize both to LOCAL midnight (prevents timezone drift)
+  today.setHours(0, 0, 0, 0);
+  due.setHours(0, 0, 0, 0);
+
+  const diffMs = due - today;
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  return diffDays;
+}
+
+
+function getTaskForProject(projectId){
+    const tasks = getAllTasks();
+
+    return tasks.filter(task => task.projectId === projectId);
+
+}
+
+export function getProjectStats(projectId) {
+  const projectTasks = getTaskForProject(projectId);
+  const project = getProjectById(projectId);
+
+  const total = projectTasks.length;
+
+  const completed = projectTasks.filter(task => task.completed === true).length;
+
+  const incomplete = total - completed;
+
+  // 📅 Time calculation
+  const daysRemaining = project?.projectDueDate
+    ? getDaysRemaining(project.projectDueDate)
+    : null;
+
+  const isOverdue = daysRemaining !== null && daysRemaining < 0;
+
+  return {
+    total,
+    completed,
+    incomplete,
+    daysRemaining,
+    isOverdue
+  };
 }

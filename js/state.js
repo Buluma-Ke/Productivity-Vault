@@ -1,12 +1,20 @@
+import { getVault, saveVault } from "./helpers.js";
+import { render } from "./render.js";
 import { saveState, loadState } from "./storage.js"
 
 export const state = {
     habits: [],
-    tasks: []
+    tasks: [],
+    projects: []
 };
 
 // export const state = loadState();
 
+
+
+// -------------
+// HABITS
+// -------------
 
 export function addHabit({ name, startDate, frequency }) {
     const Habit = {
@@ -37,29 +45,61 @@ export function markComplete(habitId) {
 }
 
 
+
 //----------------
 // TASKS
 //----------------
 
-export function addTask({ name, dueDate }) {
+export function addTask({ name, dueDate, projectId }) {
     const Task = {
         id: crypto.randomUUID(),
         name,
         dueDate,
-        completed: false
+        completed: false,
+
+        projectId
     };
     console.log(state.tasks);
     state.tasks.push(Task);
     saveState(state);
 }
 
-export function markTaskCompleted(taskId) {
+export function toggleTaskComplete(taskId) {
+    const vault = getVault()
     // Find the Task ID;
-    const task = state.tasks.find(t => t.id === taskId);
-    if (!task) return null;
+    vault.tasks = vault.tasks.map(task => {
+        if(task.id === taskId){
+            return {
+                ...task,
+                completed: !task.completed
+            };
+        }
+        return task;
+    });
 
-    if (task.completed){
-        task.completed = true;
-        saveState(state);
-    }
+    saveVault(vault);
+
+    // renderTasks();
+    // renderProjects();
+
+}   
+
+// -------------
+// PROJECTS
+// -------------
+
+      
+export function addProject({ projectName,  projectDueDate}) {
+    console.log(projectName);
+    console.log(projectDueDate);
+    const Project = {
+        id: crypto.randomUUID(),
+        projectName,
+        projectDueDate
+    };
+    // console.log(state.tasks);
+    console.log(projectName);
+    console.log(projectDueDate);
+    state.projects.push(Project);
+    saveState(state);
 }
