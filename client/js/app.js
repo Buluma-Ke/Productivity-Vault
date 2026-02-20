@@ -8,8 +8,18 @@ import { state } from "./state.js";
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    Object.assign(state, loadState());
-    render();
+
+    async function init() {
+        try{
+            const loaded = await loadState();
+            Object.assign(state, loaded);
+        } catch(e){
+            console.error("Failed to load state:", e);
+        }
+        render();
+    }
+
+    init();
 
     // ----------------
     // Add new habit
