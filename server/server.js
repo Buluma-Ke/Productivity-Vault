@@ -13,22 +13,35 @@ app.get("/", (req, res) => {
 });
 
 // GET /state → loads all habits and tasks
-app.get("/state", (req, res) => {
+app.get("/state", async (req, res) => {
   const state = { habits: [], tasks: [], projects: [] };
 
   db.all("SELECT * FROM habits", [], (err, habits) => {
     if (err) return res.status(500).json({ error: err.message });
-    state.habits = habits;
 
-    db.all("SELECT * FROM tasks", [], (err, tasks) => {
+    db.all("SELECT * FROM habit_completions", [], (err, completions) => {
       if (err) return res.status(500).json({ error: err.message });
-      state.tasks = tasks;
 
-      db.all("SELECT * FROM projects", [], (err, projects) => {
+      // Map completions to each habit
+      const habitsWithCompletions = habits.map(habit => ({
+        ...habit,
+        completions: completions
+          .filter(c => c.habitId === habit.id)
+          .map(c => c.date)
+      }));
+
+      state.habits = habitsWithCompletions;
+
+      db.all("SELECT * FROM tasks", [], (err, tasks) => {
         if (err) return res.status(500).json({ error: err.message });
-        state.projects = projects;
+        state.tasks = tasks;
 
-        res.json(state); // ← send ONLY after everything is loaded
+        db.all("SELECT * FROM projects", [], (err, projects) => {
+          if (err) return res.status(500).json({ error: err.message });
+          state.projects = projects;
+
+          res.json(state);
+        });
       });
     });
   });
@@ -36,6 +49,7 @@ app.get("/state", (req, res) => {
 
 // POST /state → save all habits and tasks (replaces existing)
 app.post("/state", (req, res) => {
+  console.log("POST /state body:", req.body);  // <- DEBUG
   const { habits = [], tasks = [], projects = [] } = req.body;
 
   db.serialize(() => {
@@ -56,8 +70,20 @@ app.post("/state", (req, res) => {
       // --------------------------
       db.run("DELETE FROM habits");
       const habitStmt = db.prepare("INSERT INTO habits (id, title) VALUES (?, ?)");
-      habits.forEach(h => habitStmt.run([h.id, h.title]));
+      habits.forEach(h => habitStmt.run([h.id, h.title || h.name]));
       habitStmt.finalize();
+
+      // Clear and insert completions
+      db.run("DELETE FROM habit_completions");
+      const completionStmt = db.prepare(
+        "INSERT INTO habit_completions (habitId, date) VALUES (?, ?)"
+      );
+      habits.forEach(h =>
+        (h.completions || []).forEach(date =>
+          completionStmt.run([h.id, date])
+        )
+      );
+      completionStmt.finalize();
 
       // --------------------------
       // 3️⃣ Tasks
@@ -143,15 +169,15 @@ app.post("/projects", (req, res) => {
 
 
 app.post("/habits", (req, res) => {
-  const { id, title } = req.body;
+  const { id, name } = req.body;
 
-  if (!id || !title) {
-    return res.status(400).json({ error: "id and title are required" });
+  if (!id || !name) {
+    return res.status(400).json({ error: "id and name are required" });
   }
 
-  const sql = `INSERT INTO habits (id, title) VALUES (?, ?)`;
+  const sql = `INSERT INTO habits (id, name) VALUES (?, ?)`;
 
-  db.run(sql, [id, title], function (err) {
+  db.run(sql, [id, name], function (err) {
     if (err) {
       console.error("Failed to insert habit:", err);
       return res.status(500).json({ error: "Failed to insert habit" });
@@ -161,6 +187,21 @@ app.post("/habits", (req, res) => {
     res.status(201).json({ message: "Habit created", habitId: id });
   });
 });
+
+
+// POST /habits/:id/completions
+app.post("/habits/:id/completions", (req, res) => {
+  const { id } = req.params;
+  const { date } = req.body;
+
+  if (!date) return res.status(400).json({ error: "date required" });
+
+  const sql = "INSERT INTO habit_completions (habitId, date) VALUES (?, ?)";
+  db.run(sql, [id, date], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ message: "Completion added" });
+  });
+})
 
 
 // Start server

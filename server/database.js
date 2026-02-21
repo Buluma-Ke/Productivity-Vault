@@ -32,6 +32,14 @@ db.serialize(() => {
       title TEXT NOT NULL
     )
   `);
+  db.run(`
+    CREATE TABLE habit_completions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      habitId TEXT NOT NULL,
+      date TEXT NOT NULL,
+      FOREIGN KEY (habitId) REFERENCES habits(id) ON DELETE CASCADE
+);
+    `)
 });
 
 module.exports = db;

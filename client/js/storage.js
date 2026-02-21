@@ -6,9 +6,9 @@ const STORAGE_KEY = "productivity-vault";
 //     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 // }
 export async function saveState(state) {
-    await fetch("http://localhost:3000/state",{
+    await fetch("http://localhost:3000/state" ,{
         method: "POST",
-        header: {"Content-Type": "application/json"},
+        headers: {"Content-Type": "application/json"},
         body: JSON.stringify(state)
     });
 }
@@ -27,6 +27,6 @@ export async function loadState() {
 
     }catch(err){
         console.error("Failed to load state", err);
-        return {habits: [], tasks: []};
+        return {habits: [], tasks: [], projects: []};
     }
 }

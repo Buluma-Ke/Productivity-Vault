@@ -17,6 +17,7 @@ export function saveVault(vault){
 // STREAKS COUNTER
 
 export function getStreak(habit){
+    console.log(habit)
     if(!habit.completions.length) return 0;
 
     const completionSet = new Set(habit.completions);

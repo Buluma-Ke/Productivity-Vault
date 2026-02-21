@@ -71,7 +71,7 @@ function renderHabitCard(habit, container){
     card.className = "habit-card";
 
     card.innerHTML = `
-        <h4>${habit.name}</h4>
+        <h4>${habit.title}</h4>
         <div class="frequency">🎯 Weekly: ${habit.frequency}x</div>
         <div class="habit-calender"></div>
         <div>
@@ -124,7 +124,7 @@ function renderHabitTrack(habit, container){
 
 
     card.innerHTML = `
-        <h4>${habit.name}</h4>
+        <h4>${habit.title}</h4>
         <button data-habit-id=${habit.id} class="complete-btn">Mark as complete</button>
     `;
 
@@ -296,7 +296,7 @@ function renderTaskCard(task, container){
     card.className = "task-card";
 
     card.innerHTML = `
-        <h4>🧾 ${task.name}</h4>
+        <h4>🧾 ${task.title}</h4>
         <button class="start" id=${task.id}btn >😡Not started</button>
         <p>📆 Due ${taskWarning(task)}</p>
         <button class="task-complete" data-id=${task.id} >Mark as completed</button>
