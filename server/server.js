@@ -28,7 +28,7 @@ app.get("/state", async (req, res) => {
         completions: completions
           .filter(c => c.habitId === habit.id)
           .map(c => c.date)
-      }));
+      }));   
 
       state.habits = habitsWithCompletions;
 
@@ -69,8 +69,8 @@ app.post("/state", (req, res) => {
       // 2️⃣ Habits
       // --------------------------
       db.run("DELETE FROM habits");
-      const habitStmt = db.prepare("INSERT INTO habits (id, title) VALUES (?, ?)");
-      habits.forEach(h => habitStmt.run([h.id, h.title || h.name]));
+      const habitStmt = db.prepare("INSERT INTO habits (id, title, startDate, frequency) VALUES (?, ?, ?, ?)");
+      habits.forEach(h => habitStmt.run([h.id, h.title || h.name, h.frequency]));
       habitStmt.finalize();
 
       // Clear and insert completions
@@ -175,7 +175,7 @@ app.post("/habits", (req, res) => {
     return res.status(400).json({ error: "id and name are required" });
   }
 
-  const sql = `INSERT INTO habits (id, name) VALUES (?, ?)`;
+  const sql = `INSERT INTO habits (id, title, startDate, frequency) VALUES (?, ?, ?, ?)`;
 
   db.run(sql, [id, name], function (err) {
     if (err) {

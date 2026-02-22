@@ -6,6 +6,9 @@ const db = new sqlite3.Database("./vault.db");
 // This runs when the server starts
 db.serialize(() => {
   console.log("Connected to SQLite database.");
+  db.run(`
+    //DROP TABLE habits
+    //`);
 
   db.run(`
     CREATE TABLE IF NOT EXISTS projects (
@@ -29,11 +32,13 @@ db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS habits (
       id TEXT PRIMARY KEY,
-      title TEXT NOT NULL
+      title TEXT NOT NULL,
+      startDate TEXT NOT NULL
+      frequency TEXT NOT NULL
     )
   `);
   db.run(`
-    CREATE TABLE habit_completions (
+    CREATE TABLE IF NOT EXISTS habit_completions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       habitId TEXT NOT NULL,
       date TEXT NOT NULL,

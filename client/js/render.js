@@ -124,7 +124,7 @@ function renderHabitTrack(habit, container){
 
 
     card.innerHTML = `
-        <h4>${habit.title}</h4>
+        <h4>${habit.name}</h4>
         <button data-habit-id=${habit.id} class="complete-btn">Mark as complete</button>
     `;
 
