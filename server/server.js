@@ -28,7 +28,7 @@ app.get("/state", async (req, res) => {
         completions: completions
           .filter(c => c.habitId === habit.id)
           .map(c => c.date)
-      }));   
+      }));
 
       state.habits = habitsWithCompletions;
 
@@ -70,7 +70,7 @@ app.post("/state", (req, res) => {
       // --------------------------
       db.run("DELETE FROM habits");
       const habitStmt = db.prepare("INSERT INTO habits (id, title, startDate, frequency) VALUES (?, ?, ?, ?)");
-      habits.forEach(h => habitStmt.run([h.id, h.title || h.name, h.frequency]));
+      habits.forEach(h => habitStmt.run([h.id, h.title || h.name, h.startDate, h.frequency]));
       habitStmt.finalize();
 
       // Clear and insert completions

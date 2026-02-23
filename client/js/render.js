@@ -55,7 +55,7 @@ function renderHabits() {
         renderHabitTrack(habit, trackGrid);
     });
     const addCard = document.createElement("div");
- 
+
     addCard.className = "habit-card"
     addCard.innerHTML = `
         <div>
@@ -63,7 +63,7 @@ function renderHabits() {
             <p>Add New Habit</p>
         </div>
     `
-    
+
 }
 
 function renderHabitCard(habit, container){
@@ -124,7 +124,7 @@ function renderHabitTrack(habit, container){
 
 
     card.innerHTML = `
-        <h4>${habit.name}</h4>
+        <h4>${habit.title}</h4>
         <button data-habit-id=${habit.id} class="complete-btn">Mark as complete</button>
     `;
 
@@ -321,7 +321,7 @@ function renderTaskCard(task, container){
 // ----------------
 
 function renderProject() {
-    
+
     const projectGrid = document.getElementById("project-grid");
 
     if(!projectGrid) return;
@@ -339,7 +339,7 @@ function populateProjectOptions(){
     console.log(select);
     const vault = JSON.parse(localStorage.getItem("productivity-vault"))
 
-    const projects = vault.projects || []; 
+    const projects = vault.projects || [];
     console.log(projects)
 
     select.innerHTML = `<option value="">Project</option>`;
@@ -348,7 +348,7 @@ function populateProjectOptions(){
         const option = document.createElement("option");
         option.value = project.id;
         console.log(option.value);
-        option.textContent = project.projectName     
+        option.textContent = project.projectName
         select.appendChild(option);
     });
 }
@@ -370,9 +370,10 @@ function renderprojectCard(project, container){
     card.className = "project-card";
 
     const stats = getProjectStats(project.id)
+    
 
     card.innerHTML = `
-        <h4>📌 ${project.projectName}</h4>
+        <h4>📌 ${project.title}</h4>
         <div class="project-metadata"><p>🕐Total related tasks = ${stats.total}</div>
         <div class="project-metadata">
             <p>☘Total incompleted tasks = ${stats.incomplete}</p>

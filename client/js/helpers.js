@@ -1,3 +1,4 @@
+import { state } from "./state.js";
 // Vault Helpers
 
 export function getVault(){
@@ -17,7 +18,6 @@ export function saveVault(vault){
 // STREAKS COUNTER
 
 export function getStreak(habit){
-    console.log(habit)
     if(!habit.completions.length) return 0;
 
     const completionSet = new Set(habit.completions);
@@ -103,15 +103,13 @@ export function taskWarning(task){
 // -----------------
 
 function getAllTasks(){
-    const vault = JSON.parse(localStorage.getItem("productivity-vault"));
-     return vault.tasks
+    return state.tasks || [];
 }
 
 // filter tasks that belong to a project
 
-function getProjectById(projectId) {
-  const vault = getVault(); // your central object
-  return vault.projects.find(p => p.id === projectId);
+function getProjectById(projectId) { // your central object
+  return state.projects.find(p => p.id === projectId);
 }
 
 function getDaysRemaining(deadline) {
@@ -129,7 +127,6 @@ function getDaysRemaining(deadline) {
 
   return diffDays;
 }
-
 
 function getTaskForProject(projectId){
     const tasks = getAllTasks();
@@ -149,8 +146,8 @@ export function getProjectStats(projectId) {
   const incomplete = total - completed;
 
   // 📅 Time calculation
-  const daysRemaining = project?.projectDueDate
-    ? getDaysRemaining(project.projectDueDate)
+  const daysRemaining = project?.deadline
+    ? getDaysRemaining(project.deadline)
     : null;
 
   const isOverdue = daysRemaining !== null && daysRemaining < 0;

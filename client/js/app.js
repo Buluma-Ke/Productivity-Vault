@@ -2,7 +2,7 @@ import { addHabit, markComplete, addTask, addProject, toggleTaskComplete } from 
 
 import { render, showHabitModal, hideHabitModal, showTaskModal, hideTaskModal, showProjectModal, hideProjectModal } from "./render.js";
 
-import { loadState } from "./storage.js";
+// import { loadState } from "./storage.js";
 import { state } from "./state.js";
 
 
@@ -10,16 +10,20 @@ import { state } from "./state.js";
 document.addEventListener("DOMContentLoaded", () => {
 
     async function init() {
-        try{
-            const loaded = await loadState();
-            Object.assign(state, loaded);
-        } catch(e){
+        try {
+            // Load state from server; state.load() already updates the state object
+            await state.load();
+
+        } catch (e) {
             console.error("Failed to load state:", e);
         }
+
+        // Render UI after state is populated
         render();
     }
 
     init();
+
 
     // ----------------
     // Add new habit
@@ -40,11 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
     habitForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        const name = habitForm.habitName.value;
+        const title = habitForm.habitName.value;
         const startDate = habitForm.startDate.value;
         const frequency = Number(habitForm.frequency.value);
 
-        addHabit({ name, startDate, frequency});
+        addHabit({ title, startDate, frequency});
 
         render();
         habitForm.reset();
@@ -132,10 +136,10 @@ document.addEventListener("DOMContentLoaded", () => {
        projectForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        const projectName = projectForm.projectName.value;
-        const projectDueDate = projectForm.dueDate.value;
+        const title = projectForm.projectName.value;
+        const deadline = projectForm.dueDate.value;
 
-        addProject({ projectName, projectDueDate });
+        addProject({ title, deadline });
 
         render();
         projectForm.reset();
