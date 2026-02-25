@@ -79,16 +79,15 @@ export function markComplete(habitId) {
 // TASKS
 //----------------
 
-export function addTask({ name, dueDate, projectId }) {
+export function addTask({ title, dueDate, projectId }) {
     const Task = {
         id: crypto.randomUUID(),
-        name,
+        title,
         dueDate,
         completed: false,
 
         projectId
     };
-    console.log(state.tasks);
     state.tasks.push(Task);
     saveState(state);
 }
@@ -116,7 +115,7 @@ export function toggleTaskComplete(taskId) {
 // -------------
 // PROJECTS
 // -------------
-export function addProject({ title,  deadline }) {
+export function addProject({ title, deadline }) {
     const Project = {
         id: crypto.randomUUID(),
         title,

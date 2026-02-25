@@ -74,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeTaskBtn = document.getElementById('closeModal');
 
     newTaskBtn.addEventListener("click", () => {
-        console.log("click!");
         showTaskModal();
     });
 
@@ -89,12 +88,11 @@ document.addEventListener("DOMContentLoaded", () => {
     taskForm.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        const name = taskForm.taskName.value;
+        const title = taskForm.taskName.value;
         const dueDate = taskForm.dueDate.value;
         const projectId = taskForm.projectId.value || null;
-        console.log(projectId);
 
-        addTask({ name, dueDate, projectId });
+        addTask({ title, dueDate, projectId });
 
         render();
         taskForm.reset();
@@ -138,6 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const title = projectForm.projectName.value;
         const deadline = projectForm.dueDate.value;
+        console.log(deadline)
 
         addProject({ title, deadline });
 

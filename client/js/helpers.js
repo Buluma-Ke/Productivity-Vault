@@ -113,6 +113,7 @@ function getProjectById(projectId) { // your central object
 }
 
 function getDaysRemaining(deadline) {
+    console.log(deadline);
   if (!deadline) return null;
 
   const today = new Date();
@@ -138,6 +139,7 @@ function getTaskForProject(projectId){
 export function getProjectStats(projectId) {
   const projectTasks = getTaskForProject(projectId);
   const project = getProjectById(projectId);
+  console.log(project)
 
   const total = projectTasks.length;
 
@@ -147,6 +149,7 @@ export function getProjectStats(projectId) {
 
   // 📅 Time calculation
   const daysRemaining = project?.deadline
+  console.log(daysRemaining)
     ? getDaysRemaining(project.deadline)
     : null;
 

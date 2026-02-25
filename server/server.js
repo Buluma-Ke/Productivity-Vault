@@ -188,7 +188,6 @@ app.post("/habits", (req, res) => {
   });
 });
 
-
 // POST /habits/:id/completions
 app.post("/habits/:id/completions", (req, res) => {
   const { id } = req.params;

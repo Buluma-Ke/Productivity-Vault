@@ -279,7 +279,6 @@ function renderTasks() {
 // Task Cards
 
 export function showTaskModal(){
-    console.log("Task!")
     document.getElementById('taskModal').style.display = "flex";
     document.getElementById("app").classList.add("blurred");
     populateProjectOptions();
@@ -336,19 +335,16 @@ function renderProject() {
 // project tasks
 function populateProjectOptions(){
     const select = document.getElementById("taskProject");
-    console.log(select);
-    const vault = JSON.parse(localStorage.getItem("productivity-vault"))
-
+    
+    const vault = state
     const projects = vault.projects || [];
-    console.log(projects)
 
     select.innerHTML = `<option value="">Project</option>`;
 
     projects.forEach(project => {
         const option = document.createElement("option");
         option.value = project.id;
-        console.log(option.value);
-        option.textContent = project.projectName
+        option.textContent = project.title
         select.appendChild(option);
     });
 }
@@ -369,8 +365,7 @@ function renderprojectCard(project, container){
     const card = document.createElement("div");
     card.className = "project-card";
 
-    const stats = getProjectStats(project.id)
-    
+    const stats = getProjectStats(project.id)    
 
     card.innerHTML = `
         <h4>📌 ${project.title}</h4>
@@ -386,4 +381,26 @@ function renderprojectCard(project, container){
     `;
 
     container.appendChild(card);
+}
+
+
+// Weekly & Month calender
+
+function renderWeeklyMonthlyCalender(container){
+
+    if(!container) return;
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    const firstday = new Date(year, month, 1);
+    const lastday = new Date(year, month + 1, 0);
+    const daysInMonth = lastday.getDate();
+    const firstDayIndex = firstday.getDay();
+
+    container.innerHTML = "";
+
+    const calenderGrid = document.createElement("div");
+    calenderGrid.className = "calender-grid";
 }
