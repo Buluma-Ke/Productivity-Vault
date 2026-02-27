@@ -43,8 +43,8 @@ db.serialize(() => {
       habitId TEXT NOT NULL,
       date TEXT NOT NULL,
       FOREIGN KEY (habitId) REFERENCES habits(id) ON DELETE CASCADE
-);
-    `)
+  );
+  `)
 });
 
 module.exports = db;
