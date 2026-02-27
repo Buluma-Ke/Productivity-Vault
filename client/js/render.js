@@ -38,6 +38,7 @@ export function render(){
     renderGrid();
     renderTasks();
     renderProject();
+    renderWeeklyCalender();
 }
 
 
@@ -63,7 +64,6 @@ function renderHabits() {
             <p>Add New Habit</p>
         </div>
     `
-
 }
 
 function renderHabitCard(habit, container){
@@ -386,21 +386,121 @@ function renderprojectCard(project, container){
 
 // Weekly & Month calender
 
-function renderWeeklyMonthlyCalender(container){
 
-    if(!container) return;
+function renderWeeklyCalender() {
+    const calenderGrid = document.getElementById("calendar-grid");
+
+    if(!calenderGrid) return;
+
+    const tasks = state.tasks;
+
+    renderWeeklyMonthlyCalender(calenderGrid, tasks);
+
+    // calenderGrid.innerHTML = "";
+
+    // state.habits.forEach(habit => {
+    //     renderHabitCard(habit, habitGrid);
+    //     renderHabitTrack(habit, trackGrid);
+    // });
+}
+
+
+function renderWeeklyMonthlyCalender(container, tasks = []) {
+    console.log('found it')
+    if (!container) return;
 
     const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
+    today.setHours(0, 0, 0, 0);
 
-    const firstday = new Date(year, month, 1);
-    const lastday = new Date(year, month + 1, 0);
-    const daysInMonth = lastday.getDate();
-    const firstDayIndex = firstday.getDay();
+    // --- Build Mon–Sun dates for the current week ---
+    const dow = today.getDay(); // 0 = Sun
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
 
+    const weekDates = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        return d;
+    });
+
+    const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+    // --- Index tasks by dueDate string (YYYY-MM-DD) ---
+    const tasksByDate = {};
+    tasks.forEach(task => {
+        if (!task.dueDate) return;
+        if (!tasksByDate[task.dueDate]) tasksByDate[task.dueDate] = [];
+        tasksByDate[task.dueDate].push(task);
+    });
+
+    // --- Clear & build ---
     container.innerHTML = "";
 
-    const calenderGrid = document.createElement("div");
-    calenderGrid.className = "calender-grid";
+    const calendarGrid = document.createElement("div");
+    calendarGrid.className = "calendar-grid";
+
+    weekDates.forEach((date, i) => {
+        const dateStr = date.toISOString().split("T")[0]; // "YYYY-MM-DD"
+        const isToday = date.getTime() === today.getTime();
+        const dayTasks = tasksByDate[dateStr] || [];
+
+        // Day column
+        const dayCol = document.createElement("div");
+        dayCol.className = "calendar-day" + (isToday ? " calendar-day--today" : "");
+
+        // // Day header
+        // const dayHeader = document.createElement("div");
+        // dayHeader.className = "calendar-day__header";
+
+        // const dayLabel = document.createElement("span");
+        // dayLabel.className = "calendar-day__label";
+        // dayLabel.textContent = DAY_LABELS[i];
+
+        // const dayNumber = document.createElement("span");
+        // dayNumber.className = "calendar-day__number";
+        // dayNumber.textContent = date.getDate();
+
+        // dayHeader.appendChild(dayLabel);
+        // dayHeader.appendChild(dayNumber);
+
+        // Task list
+        const taskList = document.createElement("div");
+        taskList.className = "calendar-day__tasks";
+
+        if (dayTasks.length === 0) {
+            const empty = document.createElement("p");
+            empty.className = "calendar-day__empty";
+            empty.textContent = "No tasks";
+            taskList.appendChild(empty);
+        } else {
+            dayTasks.forEach(task => {
+                const card = document.createElement("div");
+                card.className = "calendar-task-card" + (task.completed ? " calendar-task-card--done" : "");
+                card.dataset.id = task.id;
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "calendar-task-card__checkbox";
+                checkbox.checked = Boolean(task.completed);
+                checkbox.addEventListener("change", () => {
+                    task.completed = checkbox.checked ? 1 : 0;
+                    card.classList.toggle("calendar-task-card--done", Boolean(task.completed));
+                });
+
+                const title = document.createElement("span");
+                title.className = "calendar-task-card__title";
+                title.textContent = task.title;
+
+                card.appendChild(checkbox);
+                card.appendChild(title);
+                taskList.appendChild(card);
+            });
+        }
+
+        //dayCol.appendChild(dayHeader);
+        dayCol.appendChild(taskList);
+        calendarGrid.appendChild(dayCol);
+    });
+
+    container.appendChild(calendarGrid);
 }

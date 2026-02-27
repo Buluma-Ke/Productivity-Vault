@@ -134,21 +134,28 @@ header {
     padding: 0.2rem;
 }
 .calendar-header {
-   margin-bottom: 0.5rem;
-   text-align: center; 
-}
-.calendar-grid,
-.calendar-header {
+    margin-bottom: 0.5rem;
+    text-align: center; 
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    ;
+    width: 100%;       /* make header span full container */
+    box-sizing: border-box;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    width: 100%;       /* match header width */
+    box-sizing: border-box;
 }
 .calendar-day {
     border: 1px solid #373F4E;
     min-height: 15rem;
     display: flex;
     align-items: center;
-
+    justify-content: center;  /* center content horizontally */
+    box-sizing: border-box;   /* ensures borders/padding don’t break alignment */
+    width: 100%;
+    overflow: hidden;
 }
 .habit-calender{
     display: grid;
