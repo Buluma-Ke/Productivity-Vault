@@ -27,7 +27,7 @@ Track your habits, mark completions, see weekly progress, and measure streaks.
 ---
 
 ## Project Structure
-
+```text
 habit-tracker/
 ├── client/
 │ ├── index.html
