@@ -40,7 +40,7 @@ habit-tracker/
 │ ├── db.js # SQLite database connection
 │ └── habits.db # SQLite database file
 └── README.md
-
+```
 
 ---
 
