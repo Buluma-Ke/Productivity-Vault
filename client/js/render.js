@@ -301,7 +301,7 @@ function renderTaskCard(task, container){
         <button class="task-complete" data-id=${task.id} >Mark as completed</button>
 
     `;
-    if(task.completed === true){
+    if(Boolean(task.completed)){
         const startbtn = card.querySelector(`.start`);
         startbtn.textContent = "🌺completed";
         startbtn.style.backgroundColor = "rgba(19, 109, 42, 0.35)";
@@ -404,10 +404,11 @@ function renderWeeklyCalender() {
     // });
 }
 
-
 function renderWeeklyMonthlyCalender(container, tasks = []) {
-    console.log('found it')
     if (!container) return;
+
+    // Clear existing grid content (container IS the grid)
+    container.innerHTML = "";
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -423,47 +424,35 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
         return d;
     });
 
-    const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
     // --- Index tasks by dueDate string (YYYY-MM-DD) ---
     const tasksByDate = {};
     tasks.forEach(task => {
         if (!task.dueDate) return;
-        if (!tasksByDate[task.dueDate]) tasksByDate[task.dueDate] = [];
+        if (!tasksByDate[task.dueDate]) {
+            tasksByDate[task.dueDate] = [];
+        }
         tasksByDate[task.dueDate].push(task);
     });
 
-    // --- Clear & build ---
-    container.innerHTML = "";
+    // --- Build each day column ---
+    weekDates.forEach(date => {
+        const dateStr = date.getFullYear() + "-" +
+            String(date.getMonth() + 1).padStart(2, "0") + "-" +
+            String(date.getDate()).padStart(2, "0"); 
 
-    const calendarGrid = document.createElement("div");
-    calendarGrid.className = "calendar-grid";
-
-    weekDates.forEach((date, i) => {
-        const dateStr = date.toISOString().split("T")[0]; // "YYYY-MM-DD"
         const isToday = date.getTime() === today.getTime();
         const dayTasks = tasksByDate[dateStr] || [];
 
-        // Day column
         const dayCol = document.createElement("div");
         dayCol.className = "calendar-day" + (isToday ? " calendar-day--today" : "");
 
-        // // Day header
-        // const dayHeader = document.createElement("div");
-        // dayHeader.className = "calendar-day__header";
+        const dayHeader = document.createElement("div");
+        dayHeader.className = "calendar-day__header";
+        dayHeader.textContent = date.getDate();
 
-        // const dayLabel = document.createElement("span");
-        // dayLabel.className = "calendar-day__label";
-        // dayLabel.textContent = DAY_LABELS[i];
+dayCol.appendChild(dayHeader);
 
-        // const dayNumber = document.createElement("span");
-        // dayNumber.className = "calendar-day__number";
-        // dayNumber.textContent = date.getDate();
-
-        // dayHeader.appendChild(dayLabel);
-        // dayHeader.appendChild(dayNumber);
-
-        // Task list
+        // Container for tasks inside the day
         const taskList = document.createElement("div");
         taskList.className = "calendar-day__tasks";
 
@@ -473,34 +462,32 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
             empty.textContent = "No tasks";
             taskList.appendChild(empty);
         } else {
+
             dayTasks.forEach(task => {
                 const card = document.createElement("div");
-                card.className = "calendar-task-card" + (task.completed ? " calendar-task-card--done" : "");
-                card.dataset.id = task.id;
+                card.className = "task-card-calender";
 
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.className = "calendar-task-card__checkbox";
-                checkbox.checked = Boolean(task.completed);
-                checkbox.addEventListener("change", () => {
-                    task.completed = checkbox.checked ? 1 : 0;
-                    card.classList.toggle("calendar-task-card--done", Boolean(task.completed));
-                });
+                card.innerHTML = `
+                    <h4>🧾 ${task.title}</h4>
+                    <button class="start" id="${task.id}btn">😡 Not started</button>
+                    <p>📆 Due ${taskWarning(task)}</p>
+                    <button class="task-complete" data-id="${task.id}">
+                        Mark as completed
+                    </button>
+                `;
 
-                const title = document.createElement("span");
-                title.className = "calendar-task-card__title";
-                title.textContent = task.title;
+                // Handle completed state (works for true OR 1)
+                if (Boolean(task.completed)) {
+                    const startBtn = card.querySelector(".start");
+                    startBtn.textContent = "🌺 Completed";
+                    startBtn.style.backgroundColor = "rgba(19, 109, 42, 0.35)";
+                }
 
-                card.appendChild(checkbox);
-                card.appendChild(title);
                 taskList.appendChild(card);
             });
         }
 
-        //dayCol.appendChild(dayHeader);
         dayCol.appendChild(taskList);
-        calendarGrid.appendChild(dayCol);
+        container.appendChild(dayCol); // container IS the grid
     });
-
-    container.appendChild(calendarGrid);
 }

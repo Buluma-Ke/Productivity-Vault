@@ -151,12 +151,28 @@ header {
     border: 1px solid #373F4E;
     min-height: 15rem;
     display: flex;
-    align-items: center;
-    justify-content: center;  /* center content horizontally */
+    padding: 0.5rem;
+    gap: 0.5rem;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;  /* center content horizontally */
     box-sizing: border-box;   /* ensures borders/padding don’t break alignment */
-    width: 100%;
     overflow: hidden;
 }
+.task-card-calender {
+    background-color: #212631;
+    border-radius: 0.5em;
+    padding: 0.5rem;
+    font-size: 8px;
+}
+
+.calendar-day__tasks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;   /* adjust spacing here */
+}
+
+
 .habit-calender{
     display: grid;
     grid-template-columns: repeat(7, auto);
