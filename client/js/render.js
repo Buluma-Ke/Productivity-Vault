@@ -395,14 +395,8 @@ function renderWeeklyCalender() {
     const tasks = state.tasks;
 
     renderWeeklyMonthlyCalender(calenderGrid, tasks);
-
-    // calenderGrid.innerHTML = "";
-
-    // state.habits.forEach(habit => {
-    //     renderHabitCard(habit, habitGrid);
-    //     renderHabitTrack(habit, trackGrid);
-    // });
 }
+
 
 function renderWeeklyMonthlyCalender(container, tasks = []) {
     if (!container) return;
@@ -450,7 +444,7 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
         dayHeader.className = "calendar-day__header";
         dayHeader.textContent = date.getDate();
 
-dayCol.appendChild(dayHeader);
+        dayCol.appendChild(dayHeader);
 
         // Container for tasks inside the day
         const taskList = document.createElement("div");
@@ -490,4 +484,21 @@ dayCol.appendChild(dayHeader);
         dayCol.appendChild(taskList);
         container.appendChild(dayCol); // container IS the grid
     });
+}
+
+
+// HABIT-STATISTICS
+
+function renderHabitStats() {
+    const habitStat = document.getElementById("habit-stat");
+
+    if(!habitStat) return;
+
+    const habits = state.habits;
+
+    renderHabitStatsCards(habitStat, habits);
+}
+
+function renderHabitStatsCards(container, habits = []) {
+
 }

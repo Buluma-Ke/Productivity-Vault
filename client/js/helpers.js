@@ -160,3 +160,62 @@ export function getProjectStats(projectId) {
     isOverdue
   };
 }
+
+
+// HABIT-STATISTICS
+
+function getWeekStart(date) {
+  const d = new Date(date);
+  const day = d.getDay(); // 0 = Sunday, 1 = Monday ...
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust to Monday
+  return new Date(d.setDate(diff));
+}
+
+function getWeekEnd(date) {
+  const start = getWeekStart(date);
+  return new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+}
+
+function filterCompletionsThisWeek(habitId, completions, referenceDate = new Date()) {
+  const weekStart = getWeekStart(referenceDate);
+  const weekEnd = getWeekEnd(referenceDate);
+
+  return completions
+    .filter(c => c.habitId === habitId)
+    .filter(c => {
+      const cDate = new Date(c.date);
+      return cDate >= weekStart && cDate <= weekEnd;
+    });
+}
+
+function calculateHabitStats(habitId, completions, referenceDate = new Date()) {
+  const completedThisWeek = filterCompletionsThisWeek(habitId, completions, referenceDate);
+  const completedDates = completedThisWeek.map(c => c.date);
+
+  const weekStart = getWeekStart(referenceDate);
+  let missedDays = 0;
+
+  // Count missed days in the week
+  for (let i = 0; i < 7; i++) {
+    const checkDate = new Date(weekStart);
+    checkDate.setDate(weekStart.getDate() + i);
+    const checkDateStr = checkDate.toISOString().split('T')[0];
+    if (!completedDates.includes(checkDateStr)) {
+      missedDays++;
+    }
+  }
+
+  // Streak calculation: consecutive completions up to today
+  let streak = 0;
+  let dayCursor = new Date(referenceDate);
+  while (completedDates.includes(dayCursor.toISOString().split('T')[0])) {
+    streak++;
+    dayCursor.setDate(dayCursor.getDate() - 1);
+  }
+
+  return {
+    completedThisWeek: completedThisWeek.length,
+    missedDays,
+    streak
+  };
+}
