@@ -51,15 +51,17 @@ habit-tracker/
 ```bash
 git clone https://github.com/your-username/productivity-vault.git
 cd productivity-vault
+```
 
 ### 2. Install backend dependancies
-
+```bash
 cd server
 npm install
-
+```
 ### 3. Start the backend server
+```bash
 npx nodemon server.js
-
+```
 The API will run at http://localhost:3000.
 
 ###  4. Open frontend
@@ -69,6 +71,7 @@ The API will run at http://localhost:3000.
 - Add habits and track completions
 
 ## How It Works
+
 State: state.js keeps the “truth” (habits + completions)
 
 Helpers: helpers.js computes streaks, rolling 7-day progress, and other analytics
