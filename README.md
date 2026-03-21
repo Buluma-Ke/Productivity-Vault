@@ -1,6 +1,6 @@
 # Productivity Vault - Habit Tracker
 
-A simple habit tracker web app built with **Vanilla JavaScript**, **Node.js**, and **SQLite**.  
+A simple habit tracker web app built with **Vanilla JavaScript**, **Node.js**, and **SQLite**.
 Track your habits, mark completions, see weekly progress, and measure streaks.
 
 ---
@@ -65,8 +65,10 @@ npx nodemon server.js
 The API will run at http://localhost:3000.
 
 ###  4. Open frontend
-
-- Open client/index.html in your browser
+```bash
+cd client
+npx live-server
+```
 - Make sure your backend server is running
 - Add habits and track completions
 
