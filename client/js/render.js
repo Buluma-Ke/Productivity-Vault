@@ -2,6 +2,12 @@ import {state} from "./state.js";
 import {getStreak, taskWarning, getProjectStats } from "./helpers.js"
 
 
+function createEmptyCard(label = "+ Add new") {
+    const card = document.createElement("div");
+    card.className = "empty-card";
+    card.innerHTML = `<span class="empty-card__label">${label}</span>`;
+    return card;
+}
 
 //-------------------------------------------------------------------
 // Cache Daily tracking grid onfirst load
@@ -41,12 +47,11 @@ export function render(){
     renderWeeklyCalender();
 }
 
-
 function renderHabits() {
     const habitGrid = document.getElementById("habit_grid");
     const trackGrid = document.getElementById("trackhabit_grid");
 
-    if(!habitGrid || !trackGrid) return;
+    if (!habitGrid || !trackGrid) return;
 
     habitGrid.innerHTML = "";
     trackGrid.innerHTML = "";
@@ -55,16 +60,12 @@ function renderHabits() {
         renderHabitCard(habit, habitGrid);
         renderHabitTrack(habit, trackGrid);
     });
-    const addCard = document.createElement("div");
 
-    addCard.className = "habit-card"
-    addCard.innerHTML = `
-        <div>
-            <span style="font-size: 2rem;">+</span>
-            <p>Add New Habit</p>
-        </div>
-    `
+    // Placeholder always appended after real cards (acts as "add new" slot)
+    habitGrid.appendChild(createEmptyCard("+ Add a new habit"));
+    trackGrid.appendChild(createEmptyCard("+ Track a new habit"));
 }
+
 
 function renderHabitCard(habit, container){
     const card = document.createElement("div");
@@ -264,14 +265,15 @@ function renderGrid(container, habit){
 
 function renderTasks() {
     const taskColumns = document.getElementById("task-grid");
-
-    if(!taskColumns) return;
+    if (!taskColumns) return;
 
     taskColumns.innerHTML = "";
 
     state.tasks.forEach(task => {
         renderTaskCard(task, taskColumns);
     });
+
+    taskColumns.appendChild(createEmptyCard("+ Add a new task"));
 }
 
 
@@ -320,22 +322,22 @@ function renderTaskCard(task, container){
 // ----------------
 
 function renderProject() {
-
     const projectGrid = document.getElementById("project-grid");
-
-    if(!projectGrid) return;
+    if (!projectGrid) return;
 
     projectGrid.innerHTML = "";
 
     state.projects.forEach(project => {
         renderprojectCard(project, projectGrid);
     });
+
+    projectGrid.appendChild(createEmptyCard("+ Start a new project"));
 }
 
 // project tasks
 function populateProjectOptions(){
     const select = document.getElementById("taskProject");
-    
+
     const vault = state
     const projects = vault.projects || [];
 
@@ -365,7 +367,7 @@ function renderprojectCard(project, container){
     const card = document.createElement("div");
     card.className = "project-card";
 
-    const stats = getProjectStats(project.id)    
+    const stats = getProjectStats(project.id)
 
     card.innerHTML = `
         <h4>📌 ${project.title}</h4>
@@ -432,7 +434,7 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
     weekDates.forEach(date => {
         const dateStr = date.getFullYear() + "-" +
             String(date.getMonth() + 1).padStart(2, "0") + "-" +
-            String(date.getDate()).padStart(2, "0"); 
+            String(date.getDate()).padStart(2, "0");
 
         const isToday = date.getTime() === today.getTime();
         const dayTasks = tasksByDate[dateStr] || [];
