@@ -188,34 +188,141 @@ function filterCompletionsThisWeek(habitId, completions, referenceDate = new Dat
     });
 }
 
-function calculateHabitStats(habitId, completions, referenceDate = new Date()) {
-  const completedThisWeek = filterCompletionsThisWeek(habitId, completions, referenceDate);
-  const completedDates = completedThisWeek.map(c => c.date);
+export function calculateHabitStats(habit, referenceDate = new Date()) {
+    const completionSet = new Set(habit.completions); // completions are date strings
 
-  const weekStart = getWeekStart(referenceDate);
-  let missedDays = 0;
+    const weekStart = getWeekStart(referenceDate);
+    const weekEnd = getWeekEnd(referenceDate);
 
-  // Count missed days in the week
-  for (let i = 0; i < 7; i++) {
-    const checkDate = new Date(weekStart);
-    checkDate.setDate(weekStart.getDate() + i);
-    const checkDateStr = checkDate.toISOString().split('T')[0];
-    if (!completedDates.includes(checkDateStr)) {
-      missedDays++;
+    let completedThisWeek = 0;
+    let missedDays = 0;
+
+    for (let i = 0; i < 7; i++) {
+        const day = new Date(weekStart);
+        day.setDate(weekStart.getDate() + i);
+
+        // Don't count future days as missed
+        if (day > referenceDate) break;
+
+        const iso = day.toISOString().split('T')[0];
+
+        if (completionSet.has(iso)) {
+            completedThisWeek++;
+        } else {
+            missedDays++;
+        }
     }
-  }
 
-  // Streak calculation: consecutive completions up to today
-  let streak = 0;
-  let dayCursor = new Date(referenceDate);
-  while (completedDates.includes(dayCursor.toISOString().split('T')[0])) {
-    streak++;
-    dayCursor.setDate(dayCursor.getDate() - 1);
-  }
+    return {
+        completedThisWeek,
+        missedDays,
+        streak: getStreak(habit)  // reuse your existing streak helper
+    };
+}
 
-  return {
-    completedThisWeek: completedThisWeek.length,
-    missedDays,
-    streak
-  };
+
+export function getPerformanceData() {
+    const today = new Date();
+    const todayISO = today.toISOString().split('T')[0];
+
+    // Week number
+    const startOfYear = new Date(today.getFullYear(), 0, 1);
+    const weekNum = Math.ceil(((today - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+
+    // Today's tasks
+    const todayTasks = state.tasks.filter(t => t.dueDate === todayISO);
+    const completedToday = todayTasks.filter(t => Boolean(t.completed));
+
+    // Overdue (before today, not completed)
+    const overdueTasks = state.tasks.filter(t => t.dueDate < todayISO && !Boolean(t.completed));
+
+    // Overdue last 7 days
+    const lastWeekISO = new Date(today.setDate(today.getDate() - 7)).toISOString().split('T')[0];
+    const overdueLastWeek = state.tasks.filter(t =>
+        t.dueDate >= lastWeekISO &&
+        t.dueDate < todayISO &&
+        !Boolean(t.completed)
+    );
+
+    // Upcoming this month (after today, before end of month)
+    const endOfMonthISO = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+        .toISOString().split('T')[0];
+    const upcomingThisMonth = state.tasks.filter(t =>
+        t.dueDate > todayISO &&
+        t.dueDate <= endOfMonthISO &&
+        !Boolean(t.completed)
+    );
+
+    return {
+        weekNum,
+        todayTasks,
+        completedToday,
+        overdueTasks,
+        overdueLastWeek,
+        upcomingThisMonth
+    };
+}
+
+
+
+// habit progress bar ad color
+
+// Assigns a random progress bar color on creation, seeded by habit id
+export function getHabitColor(habitId) {
+    const colors = ['blue', 'green', 'orange', 'yellow'];
+    // Use the id string to consistently return the same color for the same habit
+    const index = habitId.charCodeAt(0) % colors.length;
+    return colors[index];
+}
+
+// Returns progress within the current 7-day window starting from startDate
+export function getWeeklyWindowProgress(habit) {
+    const start = new Date(habit.startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // How many days since the habit started (capped at 7)
+    const daysSinceStart = Math.floor((today - start) / 86400000);
+    const currentWeekIndex = Math.floor(daysSinceStart / 7); // which 7-day window we're in
+
+    const windowStart = new Date(start);
+    windowStart.setDate(start.getDate() + currentWeekIndex * 7);
+
+    const completionSet = new Set(habit.completions);
+    let completed = 0;
+
+    for (let i = 0; i < 7; i++) {
+        const day = new Date(windowStart);
+        day.setDate(windowStart.getDate() + i);
+        if (day > today) break;
+        const iso = day.toISOString().split('T')[0];
+        if (completionSet.has(iso)) completed++;
+    }
+
+    return {
+        completed,
+        total: 7,
+        percentage: Math.round((completed / 7) * 100)
+    };
+}
+
+
+// isArchived
+
+export function isArchived(task) {
+    if (!task.completed || !task.completedAt) return false;
+    const completedAt = new Date(task.completedAt);
+    const now = new Date();
+    const diffHrs = (now - completedAt) / (1000 * 60 * 60);
+    return diffHrs >= 24;
+}
+
+export function isProjectArchived(project) {
+    if (!project.completedAt) return false;
+    const completedAt = new Date(project.completedAt);
+    const now = new Date();
+    const diffHrs = (now - completedAt) / (1000 * 60 * 60);
+    return diffHrs >= 24;
 }

@@ -61,8 +61,8 @@ app.post("/state", (req, res) => {
       // 1️⃣ Projects
       // --------------------------
       db.run("DELETE FROM projects");
-      const projectStmt = db.prepare("INSERT INTO projects (id, title, deadline) VALUES (?, ?, ?)");
-      projects.forEach(p => projectStmt.run([p.id, p.title, p.deadline]));
+      const projectStmt = db.prepare("INSERT INTO projects (id, title, deadline, completedAt) VALUES (?, ?, ?, ?)");
+      projects.forEach(p => projectStmt.run([p.id, p.title, p.deadline,  p.completedAt || null]));
       projectStmt.finalize();
 
       // --------------------------
@@ -91,11 +91,11 @@ app.post("/state", (req, res) => {
       // Note: tasks reference projects, so must come AFTER projects
       db.run("DELETE FROM tasks");
       const taskStmt = db.prepare(`
-        INSERT INTO tasks (id, title, dueDate, completed, projectId)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO tasks (id, title, dueDate, completed, projectId, completedAt)
+        VALUES (?, ?, ?, ?, ?, ?)
       `);
       tasks.forEach(t =>
-        taskStmt.run([t.id, t.title, t.dueDate, t.completed || 0, t.projectId || null])
+        taskStmt.run([t.id, t.title, t.dueDate, t.completed || 0, t.projectId || null, t.completedAt || null])
       );
       taskStmt.finalize();
 

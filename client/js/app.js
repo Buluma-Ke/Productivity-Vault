@@ -1,6 +1,6 @@
-import { addHabit, markComplete, addTask, addProject, toggleTaskComplete } from "./state.js";
+import { addHabit, markComplete, addTask, addProject, toggleTaskComplete, deleteTask, deleteHabit, deleteProject, toggleProjectComplete  } from "./state.js";
 
-import { render, showHabitModal, hideHabitModal, showTaskModal, hideTaskModal, showProjectModal, hideProjectModal } from "./render.js";
+import { render, showHabitModal, hideHabitModal, showTaskModal, hideTaskModal, showProjectModal, hideProjectModal, renderFilteredTasks, renderFilteredProjects } from "./render.js";
 
 // import { loadState } from "./storage.js";
 import { state } from "./state.js";
@@ -24,6 +24,82 @@ document.addEventListener("DOMContentLoaded", () => {
 
     init();
 
+
+    // Toggle side bar
+
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('sidebar--open');
+        overlay.classList.toggle('sidebar-overlay--visible');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('sidebar--open');
+        overlay.classList.remove('sidebar-overlay--visible');
+    });
+
+
+    // Delete buttons
+
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+            const { type, id } = e.target.dataset;
+
+            if (type === 'task')    deleteTask(id);
+            if (type === 'habit')   deleteHabit(id);
+            if (type === 'project') deleteProject(id);
+
+            render();
+        }
+
+        if (e.target.classList.contains('task-filter-btn')) {
+            // Update active state
+            document.querySelectorAll('.task-filter-btn').forEach(btn => {
+                btn.classList.remove('task-filter-btn--active');
+            });
+            e.target.classList.add('task-filter-btn--active');
+
+            renderFilteredTasks(e.target.dataset.filter);
+        }
+
+            // Project filter tabs
+        if (e.target.classList.contains('project-filter-btn')) {
+            document.querySelectorAll('.project-filter-btn').forEach(btn =>
+                btn.classList.remove('project-filter-btn--active')
+            );
+            e.target.classList.add('project-filter-btn--active');
+            renderFilteredProjects(e.target.dataset.filter);
+        }
+
+        // Project complete button
+        if (e.target.classList.contains('project-complete-btn')) {
+            const projectId = e.target.dataset.id;
+            toggleProjectComplete(projectId);
+            render();
+        }
+
+        // Navigation
+        if (e.target.classList.contains('nav-btn')) {
+            const targetId = e.target.dataset.target;
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        if (e.target.classList.contains('empty-card') || e.target.classList.contains('empty-card__label')) {
+            const card = e.target.closest('.empty-card');
+            const action = card?.dataset.action;
+
+            if (action === 'habit')   showHabitModal();
+            if (action === 'task')    showTaskModal();
+            if (action === 'project') showProjectModal();
+        }
+ 
+    });
 
     // ----------------
     // Add new habit
@@ -57,14 +133,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Mark day complete
 
-
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains("complete-btn")) {
-            // get ID from the data attribute
             const habitId = e.target.dataset.habitId;
             markComplete(habitId);
+            render(); // <-- inside the if
         }
-        render()
     })
     // ------------------------------------
 
@@ -110,6 +184,55 @@ document.addEventListener("DOMContentLoaded", () => {
             render();
         }
     })
+
+    document.addEventListener('click', (e) => {
+
+    // Status button — two step toggle
+    if (e.target.classList.contains('start')) {
+        const btn = e.target;
+
+        if (btn.classList.contains('start--pending')) {
+            // step 1: not started → bored
+            btn.textContent = '😑 ...';
+            btn.classList.replace('start--pending', 'start--bored');
+
+        } else if (btn.classList.contains('start--bored')) {
+            // step 2: bored → completed, change state
+            const taskId = btn.id.replace('btn', '');
+            toggleTaskComplete(taskId);
+            btn.textContent = '😊 Completed';
+            btn.classList.replace('start--bored', 'start--done');
+
+        } else if (btn.classList.contains('start--done')) {
+            // pressing again goes back to bored
+            btn.textContent = '😑 ...';
+            btn.classList.replace('start--done', 'start--bored');
+        }
+    }
+
+    // Mark as completed — changes state directly
+    if (e.target.classList.contains('task-complete')) {
+        const taskId = e.target.dataset.id;
+        toggleTaskComplete(taskId);
+
+        const card = e.target.closest('.task-card');
+        if (card) {
+            const statusBtn = card.querySelector('.start');
+            statusBtn.textContent = '😊 Completed';
+            statusBtn.classList.remove('start--pending', 'start--bored');
+            statusBtn.classList.add('start--done');
+        }
+    }
+
+    // Habit complete button
+    if (e.target.classList.contains("complete-btn")) {
+        const habitId = e.target.dataset.habitId;
+        markComplete(habitId);
+        render();
+    }
+
+});
+
     // ------------------------
 
     // -----------------------

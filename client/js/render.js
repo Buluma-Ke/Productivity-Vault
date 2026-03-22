@@ -1,7 +1,13 @@
 import {state} from "./state.js";
-import {getStreak, taskWarning, getProjectStats } from "./helpers.js"
+import { isArchived, getStreak, taskWarning, getProjectStats, getPerformanceData, calculateHabitStats, getHabitColor, getWeeklyWindowProgress, isProjectArchived } from "./helpers.js";
 
-
+function createEmptyCard(label = "+ Add new", action = null) {
+    const card = document.createElement("div");
+    card.className = "empty-card";
+    if (action) card.dataset.action = action;
+    card.innerHTML = `<span class="empty-card__label">${label}</span>`;
+    return card;
+}
 
 //-------------------------------------------------------------------
 // Cache Daily tracking grid onfirst load
@@ -39,14 +45,15 @@ export function render(){
     renderTasks();
     renderProject();
     renderWeeklyCalender();
+    renderPerformanceOverview();
+    renderHabitStats();
 }
-
 
 function renderHabits() {
     const habitGrid = document.getElementById("habit_grid");
     const trackGrid = document.getElementById("trackhabit_grid");
 
-    if(!habitGrid || !trackGrid) return;
+    if (!habitGrid || !trackGrid) return;
 
     habitGrid.innerHTML = "";
     trackGrid.innerHTML = "";
@@ -55,45 +62,47 @@ function renderHabits() {
         renderHabitCard(habit, habitGrid);
         renderHabitTrack(habit, trackGrid);
     });
-    const addCard = document.createElement("div");
 
-    addCard.className = "habit-card"
-    addCard.innerHTML = `
-        <div>
-            <span style="font-size: 2rem;">+</span>
-            <p>Add New Habit</p>
-        </div>
-    `
+    // Placeholder always appended after real cards (acts as "add new" slot)
+    habitGrid.appendChild(createEmptyCard("+ Add a new habit", "habit"));
+    trackGrid.appendChild(createEmptyCard("+ Track a new habit", "habit"));
 }
 
-function renderHabitCard(habit, container){
+
+function renderHabitCard(habit, container) {
     const card = document.createElement("div");
     card.className = "habit-card";
 
+    const { completed, total, percentage } = getWeeklyWindowProgress(habit);
+    const color = getHabitColor(habit.id);
+    const completedToday = habit.completions.includes(new Date().toISOString().split('T')[0]);
+
     card.innerHTML = `
-        <h4>${habit.title}</h4>
+        <div class="card-top">
+            <h4>${habit.title}</h4>
+            <button class="delete-btn" data-type="habit" data-id="${habit.id}">🗑</button>
+        </div>
         <div class="frequency">🎯 Weekly: ${habit.frequency}x</div>
         <div class="habit-calender"></div>
         <div>
-            <p>Completed Today</p>
+            <p class="completed-today completed-today--${completedToday ? color : 'default'}">
+                ${completedToday ? '✅' : '○'} Completed Today
+            </p>
             <div class="progress-div">
-                Progress - <div class="cntainer">
-                                <div class="progress-bar" id="myBar"></div>
-                            </div>
-                <p id="label">0%</p>
+                <div class="progress-track">
+                    <div class="progress-bar progress-bar--${color}" style="width: ${percentage}%"></div>
+                </div>
+                <span class="progress-label">${percentage}%</span>
+                <span class="progress-fraction">${completed}/${total}</span>
             </div>
             <p>Streak 🔥${getStreak(habit)} days</p>
         </div>
-
-
     `;
 
     container.appendChild(card);
 
-    // Render calender calender grid inside the card
     const calendarGrid = card.querySelector(".habit-calender");
     renderCalendar(calendarGrid, habit);
-
 }
 
 //------------------------------
@@ -118,43 +127,65 @@ const todaysDate = today.toLocaleDateString('en-GB', {
     year  : 'numeric'
 });
 
-function renderHabitTrack(habit, container){
+
+function renderHabitTrack(habit, container) {
     const card = document.createElement("article");
     card.className = "habit-card";
 
-
-    card.innerHTML = `
-        <h4>${habit.title}</h4>
-        <button data-habit-id=${habit.id} class="complete-btn">Mark as complete</button>
-    `;
-
-
     const Wfrequency = document.createElement('p');
-    Wfrequency.textContent = `🎯Weekly:${habit.frequency}x`;
+    Wfrequency.textContent = `🎯 Weekly: ${habit.frequency}x`;
 
     const date = document.createElement('p');
-    date.textContent = `📆Today is: ${todaysDate}`;
+    date.textContent = `📆 Today is: ${todaysDate}`;
 
     const wrapper = document.createElement("div");
     wrapper.className = "habit-graph-wrapper";
 
+    // Fixed day labels on the left
+    const labels = document.createElement("div");
+    labels.className = "day-labels";
+    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
+        const span = document.createElement('span');
+        span.textContent = d;
+        labels.appendChild(span);
+    });
+
+    // Scrollable grid container
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "track-scroll";
+
     const grid = document.createElement("div");
     grid.className = "track-grid";
 
-    wrapper.appendChild(cloneDayLabels());
-    wrapper.appendChild(grid);
+    scrollContainer.appendChild(grid);
+    wrapper.appendChild(labels);
+    wrapper.appendChild(scrollContainer);
 
-    // card.appendChild(title);
-    // card.appendChild(button);
+    card.innerHTML = `<h4>${habit.title}</h4>`;
+    card.appendChild(document.createElement('button')).outerHTML; // placeholder
+    
+    // rebuild button properly
+    card.innerHTML = `
+        <h4>${habit.title}</h4>
+        <button data-habit-id="${habit.id}" class="complete-btn">Mark as complete</button>
+    `;
+
     card.appendChild(Wfrequency);
     card.appendChild(date);
-    card.appendChild(wrapper); // template
-
+    card.appendChild(wrapper);
 
     container.appendChild(card);
 
-    //Render tracking grid inside this card
     renderGrid(grid, habit);
+
+    // Scroll to start of current month
+    const today = new Date();
+    const startOfYear = new Date(today.getFullYear(), 0, 1);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const daysToMonth = Math.floor((startOfMonth - startOfYear) / 86400000);
+    const cellWidth = 16; // day cell width + gap
+    const cols = Math.floor(daysToMonth / 7);
+    scrollContainer.scrollLeft = cols * cellWidth;
 }
 
 
@@ -264,14 +295,49 @@ function renderGrid(container, habit){
 
 function renderTasks() {
     const taskColumns = document.getElementById("task-grid");
+    if (!taskColumns) return;
 
-    if(!taskColumns) return;
+    // Default filter
+    renderFilteredTasks('all');
+}
+
+export function renderFilteredTasks(filter = 'all') {
+    const taskColumns = document.getElementById("task-grid");
+    if (!taskColumns) return;
 
     taskColumns.innerHTML = "";
 
-    state.tasks.forEach(task => {
-        renderTaskCard(task, taskColumns);
-    });
+    const today = new Date();
+    const todayISO = today.toISOString().split('T')[0];
+
+    const dow = today.getDay();
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+    const mondayISO = monday.toISOString().split('T')[0];
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    const sundayISO = sunday.toISOString().split('T')[0];
+
+    const activeTasks = state.tasks.filter(t => !isArchived(t));
+    const archivedTasks = state.tasks.filter(t => isArchived(t));
+
+    const filters = {
+        all:       () => activeTasks,
+        today:     () => activeTasks.filter(t => t.dueDate === todayISO),
+        week:      () => activeTasks.filter(t => t.dueDate >= mondayISO && t.dueDate <= sundayISO),
+        completed: () => activeTasks.filter(t => Boolean(t.completed)),
+        archive:   () => archivedTasks
+    };
+
+    const tasks = (filters[filter] || filters.all)();
+
+    tasks.forEach(task => renderTaskCard(task, taskColumns));
+
+    if (filter !== 'archive') {
+        taskColumns.appendChild(createEmptyCard("+ Add a new task", "task"));
+    } else if (archivedTasks.length === 0) {
+        taskColumns.appendChild(createEmptyCard("No archived tasks yet"));
+    }
 }
 
 
@@ -290,22 +356,23 @@ export function hideTaskModal(){
 }
 
 
-function renderTaskCard(task, container){
+function renderTaskCard(task, container) {
     const card = document.createElement("div");
-    card.className = "task-card";
+    card.className = "task-card" + (isArchived(task) ? " task-card--archived" : "");
 
-    card.innerHTML = `
+    const isCompleted = Boolean(task.completed);
+
+card.innerHTML = `
+    <div class="card-top">
         <h4>🧾 ${task.title}</h4>
-        <button class="start" id=${task.id}btn >😡Not started</button>
-        <p>📆 Due ${taskWarning(task)}</p>
-        <button class="task-complete" data-id=${task.id} >Mark as completed</button>
-
-    `;
-    if(Boolean(task.completed)){
-        const startbtn = card.querySelector(`.start`);
-        startbtn.textContent = "🌺completed";
-        startbtn.style.backgroundColor = "rgba(19, 109, 42, 0.35)";
-    }
+        <button class="delete-btn" data-type="task" data-id="${task.id}">🗑</button>
+    </div>
+    <button class="start ${isCompleted ? 'start--done' : 'start--pending'}" id="${task.id}btn">
+        ${isCompleted ? '😊 Completed' : '😡 Not started'}
+    </button>
+    <p>📆 Due ${taskWarning(task)}</p>
+    <button class="task-complete" data-id="${task.id}">Mark as completed</button>
+`;
 
     container.appendChild(card);
 }
@@ -320,22 +387,43 @@ function renderTaskCard(task, container){
 // ----------------
 
 function renderProject() {
-
     const projectGrid = document.getElementById("project-grid");
+    if (!projectGrid) return;
+    renderFilteredProjects('active');
+}
 
-    if(!projectGrid) return;
+export function renderFilteredProjects(filter = 'active') {
+    const projectGrid = document.getElementById("project-grid");
+    if (!projectGrid) return;
 
     projectGrid.innerHTML = "";
 
-    state.projects.forEach(project => {
-        renderprojectCard(project, projectGrid);
-    });
+    const active   = state.projects.filter(p => !isProjectArchived(p) && !p.completedAt);
+    const completed = state.projects.filter(p => p.completedAt && !isProjectArchived(p));
+    const archived  = state.projects.filter(p => isProjectArchived(p));
+
+    const filters = {
+        active,
+        completed,
+        archive: archived
+    };
+
+    const projects = filters[filter] || active;
+
+    projects.forEach(project => renderprojectCard(project, projectGrid));
+
+    if (filter !== 'archive') {
+        projectGrid.appendChild(createEmptyCard("+ Start a new project", "project"));
+    } else if (archived.length === 0) {
+        projectGrid.appendChild(createEmptyCard("No archived projects yet"));
+    }
 }
+
 
 // project tasks
 function populateProjectOptions(){
     const select = document.getElementById("taskProject");
-    
+
     const vault = state
     const projects = vault.projects || [];
 
@@ -361,23 +449,33 @@ export function hideProjectModal(){
 }
 
 // project card
-function renderprojectCard(project, container){
+function renderprojectCard(project, container) {
     const card = document.createElement("div");
-    card.className = "project-card";
+    card.className = "project-card" + (isProjectArchived(project) ? " project-card--archived" : "");
 
-    const stats = getProjectStats(project.id)    
+    const stats = getProjectStats(project.id);
+    const daysLabel = stats.daysRemaining === null
+        ? 'No deadline set'
+        : stats.daysRemaining < 0
+            ? `<span class="overdue-label">⚠ Past due</span>`
+            : `${stats.daysRemaining} days to go`;
+
+    const isCompleted = Boolean(project.completedAt);
 
     card.innerHTML = `
-        <h4>📌 ${project.title}</h4>
-        <div class="project-metadata"><p>🕐Total related tasks = ${stats.total}</div>
+        <div class="card-top">
+            <h4>📌 ${project.title}</h4>
+            <button class="delete-btn" data-type="project" data-id="${project.id}">🗑</button>
+        </div>
+        <div class="project-metadata"><p>🕐 Total related tasks = ${stats.total}</p></div>
         <div class="project-metadata">
-            <p>☘Total incompleted tasks = ${stats.incomplete}</p>
-            <p>🌺Total completed tasks = ${stats.completed}</p>
+            <p>☘ Total incompleted tasks = ${stats.incomplete}</p>
+            <p>🌺 Total completed tasks = ${stats.completed}</p>
         </div>
-        <div>
-        <p>📆 ${stats.daysRemaining} Days to go
-        </div>
-        <button class="project completed">Completed</button>
+        <div><p>📆 ${daysLabel}</p></div>
+        <button class="project-complete-btn ${isCompleted ? 'project-complete-btn--done' : ''}" data-id="${project.id}">
+            ${isCompleted ? '✅ Completed' : 'Mark complete'}
+        </button>
     `;
 
     container.appendChild(card);
@@ -389,26 +487,32 @@ function renderprojectCard(project, container){
 
 function renderWeeklyCalender() {
     const calenderGrid = document.getElementById("calendar-grid");
+    const calenderHeader = document.getElementById("calendar-month-label");
 
-    if(!calenderGrid) return;
+    if (!calenderGrid) return;
 
-    const tasks = state.tasks;
+    const today = new Date();
+    if (calenderHeader) {
+        calenderHeader.textContent = today.toLocaleDateString('en-GB', {
+            month: 'long',
+            year: 'numeric'
+        });
+    }
 
-    renderWeeklyMonthlyCalender(calenderGrid, tasks);
+    renderWeeklyMonthlyCalender(calenderGrid, state.tasks);
 }
 
 
 function renderWeeklyMonthlyCalender(container, tasks = []) {
     if (!container) return;
 
-    // Clear existing grid content (container IS the grid)
     container.innerHTML = "";
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // --- Build Mon–Sun dates for the current week ---
-    const dow = today.getDay(); // 0 = Sun
+    // Build Mon–Sun dates for the current week
+    const dow = today.getDay();
     const monday = new Date(today);
     monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
 
@@ -418,21 +522,19 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
         return d;
     });
 
-    // --- Index tasks by dueDate string (YYYY-MM-DD) ---
+    // Index tasks by dueDate string
     const tasksByDate = {};
     tasks.forEach(task => {
         if (!task.dueDate) return;
-        if (!tasksByDate[task.dueDate]) {
-            tasksByDate[task.dueDate] = [];
-        }
+        if (!tasksByDate[task.dueDate]) tasksByDate[task.dueDate] = [];
         tasksByDate[task.dueDate].push(task);
     });
 
-    // --- Build each day column ---
+    // Build each day column
     weekDates.forEach(date => {
         const dateStr = date.getFullYear() + "-" +
             String(date.getMonth() + 1).padStart(2, "0") + "-" +
-            String(date.getDate()).padStart(2, "0"); 
+            String(date.getDate()).padStart(2, "0");
 
         const isToday = date.getTime() === today.getTime();
         const dayTasks = tasksByDate[dateStr] || [];
@@ -440,13 +542,16 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
         const dayCol = document.createElement("div");
         dayCol.className = "calendar-day" + (isToday ? " calendar-day--today" : "");
 
+        // Day header with name + number
         const dayHeader = document.createElement("div");
-        dayHeader.className = "calendar-day__header";
-        dayHeader.textContent = date.getDate();
-
+        dayHeader.className = "calendar-day__header" + (isToday ? " calendar-day__header--today" : "");
+        dayHeader.innerHTML = `
+            <span class="calendar-day__name">${date.toLocaleDateString('en-GB', { weekday: 'short' })}</span>
+            <span class="calendar-day__number">${date.getDate()}</span>
+        `;
         dayCol.appendChild(dayHeader);
 
-        // Container for tasks inside the day
+        // Task list
         const taskList = document.createElement("div");
         taskList.className = "calendar-day__tasks";
 
@@ -456,49 +561,139 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
             empty.textContent = "No tasks";
             taskList.appendChild(empty);
         } else {
-
             dayTasks.forEach(task => {
                 const card = document.createElement("div");
                 card.className = "task-card-calender";
 
                 card.innerHTML = `
                     <h4>🧾 ${task.title}</h4>
-                    <button class="start" id="${task.id}btn">😡 Not started</button>
-                    <p>📆 Due ${taskWarning(task)}</p>
-                    <button class="task-complete" data-id="${task.id}">
-                        Mark as completed
+                    <button class="start ${Boolean(task.completed) ? 'start--done' : 'start--pending'}" id="${task.id}btn">
+                        ${Boolean(task.completed) ? '😊 Completed' : '😡 Not started'}
                     </button>
+                    <p>📆 Due ${taskWarning(task)}</p>
+                    <button class="task-complete" data-id="${task.id}">Mark as completed</button>
                 `;
-
-                // Handle completed state (works for true OR 1)
-                if (Boolean(task.completed)) {
-                    const startBtn = card.querySelector(".start");
-                    startBtn.textContent = "🌺 Completed";
-                    startBtn.style.backgroundColor = "rgba(19, 109, 42, 0.35)";
-                }
 
                 taskList.appendChild(card);
             });
         }
 
         dayCol.appendChild(taskList);
-        container.appendChild(dayCol); // container IS the grid
+        container.appendChild(dayCol);
     });
 }
 
 
-// HABIT-STATISTICS
+
+
+
+// PERFORMANCE
+
+export function renderPerformanceOverview() {
+    const container = document.getElementById("performance-overview");
+    if (!container) return;
+
+    const today = new Date();
+    const dayName = today.toLocaleDateString('en-GB', { weekday: 'long' });
+    const fullDate = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const {
+        weekNum,
+        todayTasks,
+        completedToday,
+        overdueTasks,
+        overdueLastWeek,
+        upcomingThisMonth
+    } = getPerformanceData();
+
+    container.innerHTML = `
+        <div class="perf-overview-card">
+            <h4>🔥Performance Overview</h4>
+            <p class="perf-intro">
+                Today is <strong>${dayName}</strong>, ${fullDate}
+                <span class="perf-week-badge">(Week ${weekNum} of the year</span>
+            </p>
+
+            <h3 class="perf-section-title">Task status overview</h3>
+            <p class="perf-sub">Here's a quick glimpse of your day so far;</p>
+            <p class="perf-stat">
+                To-do: <span class="perf-count">${completedToday.length}/${todayTasks.length}</span>
+            </p>
+            <ul class="perf-task-list">
+                ${todayTasks.length
+                    ? todayTasks.map(t => `
+                        <li class="${Boolean(t.completed) ? 'perf-task--done' : ''}">
+                            ${Boolean(t.completed) ? '✓' : '○'} ${t.title}
+                        </li>`).join('')
+                    : '<li class="perf-empty">No tasks due today</li>'
+                }
+            </ul>
+
+            <h3 class="perf-section-title">Due & upcoming tasks</h3>
+            ${overdueTasks.length
+                ? `<p class="perf-overdue-label">Overdue</p>
+                   <ul class="perf-task-list perf-task-list--overdue">
+                       ${overdueTasks.map(t => `
+                           <li>⚠ ${t.title} <span class="perf-due-date">${t.dueDate}</span></li>
+                       `).join('')}
+                   </ul>`
+                : ''
+            }
+
+            <div class="perf-notifications">
+                <p class="${overdueLastWeek.length > 0 ? 'perf-notify--warn' : 'perf-notify--ok'}">
+                    ⚠️You have ${overdueLastWeek.length} task${overdueLastWeek.length !== 1 ? 's' : ''} overdue from last week
+                </p>
+                <p class="perf-notify--ok">
+                    📆You have ${upcomingThisMonth.length} upcoming task${upcomingThisMonth.length !== 1 ? 's' : ''} this month
+                </p>
+            </div>
+        </div>
+    `;
+}
+
+
+// HABIT STATISTICS
 
 function renderHabitStats() {
     const habitStat = document.getElementById("habit-stat");
+    if (!habitStat) return;
 
-    if(!habitStat) return;
-
-    const habits = state.habits;
-
-    renderHabitStatsCards(habitStat, habits);
+    habitStat.innerHTML = "";
+    renderHabitStatsCards(habitStat, state.habits);
 }
 
 function renderHabitStatsCards(container, habits = []) {
+    if (habits.length === 0) {
+        container.appendChild(createEmptyCard("No habits yet"));
+        return;
+    }
 
+    habits.forEach(habit => {
+        const { completedThisWeek, missedDays, streak } = calculateHabitStats(habit);
+
+        const card = document.createElement("div");
+        card.className = "habit-stat-card";
+
+        card.innerHTML = `
+            <h4 class="habit-stat-card__title">${habit.title}</h4>
+            <div class="habit-stat-card__row">
+                <span class="habit-stat-card__label">This week</span>
+                <span class="habit-stat-card__value">${completedThisWeek} / 7</span>
+            </div>
+            <div class="habit-stat-card__row">
+                <span class="habit-stat-card__label">Days missed</span>
+                <span class="habit-stat-card__value habit-stat-card__value--missed">${missedDays}</span>
+            </div>
+            <div class="habit-stat-card__row">
+                <span class="habit-stat-card__label">Streak</span>
+                <span class="habit-stat-card__value">
+                    🔥 ${streak} day${streak !== 1 ? 's' : ''}
+                    ${streak <= 1 ? '<span class="habit-stat-card__badge">New record</span>' : ''}
+                </span>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
 }

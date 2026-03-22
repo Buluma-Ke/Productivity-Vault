@@ -4,8 +4,8 @@ body{
     padding: 0;
     color: #bfc6d4;
     background-color: #0A0E15;
-    font-family: 'Quicksand', sans-serif;   
-    font-size: small;  
+    font-family: 'Quicksand', sans-serif;
+    font-size: small;
     overflow-x: hidden;
 }
 .app-header {
@@ -15,7 +15,7 @@ body{
 #app {
     min-height: 100vh;
     max-width: 100%;
-    display: flex;                                                                                                                                                 
+    display: flex;
     gap: 1.5rem;
     overflow-x: hidden;
 }
@@ -25,23 +25,73 @@ body{
     user-select: none;
 
 }
+
 .sidebar {
     flex: 0 0 20%;
-    flex-direction: column;
     max-width: 700px;
     min-width: 240px;
-    gap: 1.5rem;
-    transition: all 0.5s ease;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    transition: all 0.3s ease;
 }
-@media (max-width: 700px){
-    .sidebar{
-        width: auto;
-        min-width: auto;
-        padding: 0;
-        overflow: hidden;
-        display: none;
+.sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 50%;
+        min-width: 0;
+        z-index: 999;
+        background-color: #0A0E15;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        padding: 1rem;
+    }
+    .sidebar.sidebar--open {
+        transform: translateX(0);
     }
 }
+
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1000;
+    background: #212631;
+    border: 1px solid #373F4E;
+    color: #bfc6d4;
+    border-radius: 0.4em;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    font-size: 1rem;
+}
+@media (max-width: 700px) {
+    .sidebar-toggle {
+        display: block;
+    }
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+.sidebar-overlay.sidebar-overlay--visible {
+    display: block;
+}
+
 .sidebar-section {
     display: flex;
     flex-direction: column;
@@ -74,7 +124,7 @@ button {
     gap: 1.5rem;
     min-width: 0;
     max-width: 100%;
-    overflow-x: hidden;   
+    overflow-x: hidden;
 }
 
 .panel {
@@ -83,11 +133,34 @@ button {
     gap: 1rem;
     margin-top: 1rem;
     max-width: 100%;
-    
+
 }
 header {
     border-bottom: 1px solid #373F4E;
 }
+
+.empty-card {
+    background: transparent;
+    border: 1.5px dashed #373F4E;
+    border-radius: 0.5em;
+    min-width: 225px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+.empty-card:hover {
+    border-color: #667085;
+    background-color: rgba(255, 255, 255, 0.03);
+}
+.empty-card__label {
+    color: #667085;
+    font-size: 0.85em;
+}
+
 .habit_grid {
     display: flex;
     flex-wrap: wrap;
@@ -120,6 +193,7 @@ header {
 }
 .project-grid {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
 }
 .project-card {
@@ -135,7 +209,7 @@ header {
 }
 .calendar-header {
     margin-bottom: 0.5rem;
-    text-align: center; 
+    text-align: center;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     width: 100%;       /* make header span full container */
@@ -144,8 +218,11 @@ header {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    width: 100%;       /* match header width */
+    width: 100%;
     box-sizing: border-box;
+    border: 1px solid #373F4E;
+    border-radius: 0.5em;
+    overflow: hidden;
 }
 .calendar-day {
     border: 1px solid #373F4E;
@@ -155,8 +232,8 @@ header {
     gap: 0.5rem;
     flex-direction: column;
     align-items: stretch;
-    justify-content: flex-start;  /* center content horizontally */
-    box-sizing: border-box;   /* ensures borders/padding don’t break alignment */
+    justify-content: flex-start;
+    box-sizing: border-box;
     overflow: hidden;
 }
 .task-card-calender {
@@ -196,44 +273,64 @@ header {
 }
 .habit-graph-wrapper {
     display: flex;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    height: 100px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4px;
     margin-bottom: 2rem;
-    
-
+    overflow: hidden;        /* clip the scroll inside the card */
+    max-width: 100%;
 }
+
+.day-labels span {
+    height: 15px;            /* match cell height exactly */
+    display: flex;
+    align-items: center;
+}
+
+/* Scrollable area */
+.track-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+    scrollbar-width: none;   /* hide scrollbar Firefox */
+}
+.track-scroll::-webkit-scrollbar {
+    display: none;           /* hide scrollbar Chrome/Safari */
+}
+
+
+/* Fixed left column */
 .day-labels {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    font-size: 0.7em;
-    margin-top: 0.5rem;
-    gap: 5px;
-    padding-bottom: 5px;
+    flex-shrink: 0;
+    font-size: 0.65em;
+    color: #667085;
+    gap: 1px;
 }
+
+
 .spacer {
-    background-color: #212631;
-} 
+    width: 15px;
+    height: 15px;
+    background: transparent;
+}
+
+/* The grid itself grows horizontally */
 .track-grid {
     display: grid;
-    grid-template-rows: repeat(7, 1fr);
-    gap: 1px;
-    height: 100%;
-}
-.track-grid {
-    flex-grow: 1;
+    grid-template-rows: repeat(7, 15px);
     grid-auto-flow: column;
-    grid-auto-columns: max-content;
-    justify-content: start;
-    margin-top: 0.5rem;
-
+    grid-auto-columns: 15px;
+    gap: 1px;
+    width: max-content;      /* lets it grow as wide as needed */
 }
 
 .day {
     width: 15px;
-    min-height: 10px;
+    height: 15px;
     background-color: #373F4E;
+    border-radius: 1px;
 }
 .day-completed {
     background-color: #d88a4d;
@@ -321,4 +418,370 @@ select {
 button.start{
     background-color: rgba(202, 51, 51, 0.35);
     /* color: rgba(19, 109, 42, 0.35);*/
+}
+
+
+/* PERFORMANCE OVERVIEW */
+
+.perf-overview-card {
+    background-color: #212631;
+    border-radius: 0.5em;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.8em;
+}
+.perf-intro {
+    margin: 0;
+    line-height: 1.5;
+}
+.perf-week-badge {
+    display: inline-block;
+    background-color: rgba(255,255,255,0.06);
+    border: 1px solid #373F4E;
+    border-radius: 0.3em;
+    padding: 0.1em 0.4em;
+    font-size: 0.85em;
+    margin-left: 0.3rem;
+}
+.perf-section-title {
+    margin: 0.5rem 0 0.1rem;
+    font-size: 0.95em;
+    color: #bfc6d4;
+    border-bottom: 1px solid #373F4E;
+    padding-bottom: 0.2rem;
+}
+.perf-sub {
+    margin: 0;
+    color: #667085;
+    font-size: 0.85em;
+}
+.perf-stat {
+    margin: 0.2rem 0;
+}
+.perf-count {
+    background-color: rgba(100, 200, 130, 0.12);
+    color: #7ecfa0;
+    border-radius: 0.3em;
+    padding: 0.1em 0.4em;
+}
+.perf-task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.perf-task-list li {
+    color: #bfc6d4;
+}
+.perf-task-list--overdue li {
+    color: #e06c6c;
+}
+.perf-task--done {
+    color: #667085 !important;
+    text-decoration: line-through;
+}
+.perf-empty {
+    color: #667085;
+    font-style: italic;
+}
+.perf-overdue-label {
+    margin: 0.3rem 0 0.1rem;
+    color: #e06c6c;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+.perf-notifications {
+    margin-top: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.perf-notify--ok {
+    margin: 0;
+    color: #7ecfa0;
+}
+.perf-notify--warn {
+    margin: 0;
+    color: #e06c6c;
+}
+.perf-due-date {
+    font-size: 0.8em;
+    color: #667085;
+    margin-left: 0.3rem;
+}
+
+/* HABIT STATISTICS */
+
+.habit-stat-card {
+    background-color: #2a3040;
+    border-radius: 0.5em;
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.5rem;
+}
+.habit-stat-card__title {
+    margin: 0 0 0.25rem;
+    font-size: 0.85em;
+    color: #bfc6d4;
+    border-bottom: 1px solid #373F4E;
+    padding-bottom: 0.25rem;
+}
+.habit-stat-card__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8em;
+}
+.habit-stat-card__label {
+    color: #667085;
+}
+.habit-stat-card__value {
+    color: #bfc6d4;
+    font-weight: 500;
+}
+.habit-stat-card__value--missed {
+    color: #e06c6c;
+}
+.habit-stat-card__badge {
+    font-size: 0.75em;
+    background-color: rgba(216, 138, 77, 0.15);
+    color: #d88a4d;
+    border-radius: 0.3em;
+    padding: 0.1em 0.35em;
+    margin-left: 0.3rem;
+}
+
+
+/* Progress bar */
+
+.progress-div {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.3rem 0;
+}
+.progress-track {
+    flex: 1;
+    height: 8px;
+    background-color: #373F4E;
+    border-radius: 99px;
+    overflow: hidden;
+}
+.progress-bar {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+.progress-bar--blue   { background-color: #3f8efc; }
+.progress-bar--green  { background-color: #7ecfa0; }
+.progress-bar--orange { background-color: #d88a4d; }
+.progress-bar--yellow { background-color: #e0c94d; }
+
+.progress-label {
+    font-size: 0.75em;
+    color: #bfc6d4;
+    min-width: 2.5rem;
+    text-align: right;
+}
+.progress-fraction {
+    font-size: 0.75em;
+    color: #667085;
+    min-width: 2rem;
+}
+
+/*Completed today*/
+
+.completed-today {
+    margin: 0.2rem 0;
+    transition: color 0.3s ease;
+}
+.completed-today--default { color: #667085; }
+.completed-today--blue    { color: #3f8efc; }
+.completed-today--green   { color: #7ecfa0; }
+.completed-today--orange  { color: #d88a4d; }
+.completed-today--yellow  { color: #e0c94d; }
+
+
+button.start {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+button.start--pending {
+    background-color: rgba(202, 51, 51, 0.35);
+    color: #bfc6d4;
+}
+button.start--done {
+    background-color: rgba(19, 109, 42, 0.35);
+    color: #7ecfa0;
+}
+button.start--bored {
+    background-color: rgba(100, 100, 100, 0.2);
+    color: #667085;
+}
+
+
+.overdue-label {
+    color: #e06c6c;
+    font-weight: 500;
+}
+
+
+.calendar-month-label {
+    font-size: 1em;
+    font-weight: 500;
+    color: #bfc6d4;
+    margin: 0 0 0.5rem;
+}
+.calendar-day__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #373F4E;
+    margin-bottom: 0.3rem;
+}
+.calendar-day__name {
+    font-size: 0.7em;
+    color: #667085;
+}
+.calendar-day__number {
+    font-size: 0.9em;
+    color: #bfc6d4;
+}
+.calendar-day__header--today .calendar-day__number {
+    background-color: #3f8efc;
+    color: #fff;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+}
+.calendar-day__header--today .calendar-day__name {
+    color: #3f8efc;
+}
+
+
+/*Delete button*/
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.3rem;
+}
+.card-top h4 {
+    margin: 0;
+}
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5em;
+    color: #667085;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+.delete-btn:hover {
+    color: #e06c6c;
+}
+
+/*task filter menu*/
+
+.task-filter-menu {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #373F4E;
+    margin-bottom: 0.75rem;
+}
+.task-filter-btn {
+    padding: 0.4rem 1rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    border-radius: 0;
+    font-size: 0.85em;
+    cursor: pointer;
+    color: #667085;
+    background: none;
+    transition: color 0.2s ease, border-bottom-color 0.2s ease;
+}
+.task-filter-btn:hover {
+    color: #bfc6d4;
+}
+.task-filter-btn--active {
+    color: #3f8efc;
+    border-bottom: 1px solid #3f8efc;
+}
+
+.task-card--archived {
+    opacity: 0.6;
+    border-left: 2px solid #373F4E;
+}
+
+.project-filter-btn {
+    padding: 0.4rem 1rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    border-radius: 0;
+    font-size: 0.85em;
+    cursor: pointer;
+    color: #667085;
+    background: none;
+    transition: color 0.2s ease, border-bottom-color 0.2s ease;
+}
+.project-filter-btn:hover {
+    color: #bfc6d4;
+}
+.project-filter-btn--active {
+    color: #3f8efc;
+    border-bottom: 2px solid #3f8efc;
+}
+.project-card--archived {
+    opacity: 0.6;
+    border-left: 2px solid #373F4E;
+}
+.project-complete-btn {
+    margin-top: 0.3rem;
+    width: 100%;
+}
+.project-complete-btn--done {
+    background-color: rgba(19, 109, 42, 0.35);
+    color: #7ecfa0;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.nav-btn {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border: none;
+    border-radius: 0.4em;
+    color: #667085;
+    font-size: 0.85em;
+    cursor: pointer;
+    background: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-btn:hover {
+    background-color: #212631;
+    color: #bfc6d4;
+}
+
+.empty-card {
+    cursor: pointer;
 }

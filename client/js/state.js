@@ -40,6 +40,23 @@ export async function saveState(state) {
         body: JSON.stringify(state)
     });
 }
+// drop tasks
+
+export function deleteTask(taskId) {
+    state.tasks = state.tasks.filter(t => t.id !== taskId);
+    saveState(state);
+}
+
+export function deleteHabit(habitId) {
+    state.habits = state.habits.filter(h => h.id !== habitId);
+    saveState(state);
+}
+
+export function deleteProject(projectId) {
+    state.projects = state.projects.filter(p => p.id !== projectId);
+    saveState(state);
+}
+
 
 // -------------
 // HABITS
@@ -92,24 +109,14 @@ export function addTask({ title, dueDate, projectId }) {
     saveState(state);
 }
 
+// ✅ fixed — updates state and persists to server
 export function toggleTaskComplete(taskId) {
-    const vault = getVault()
-    // Find the Task ID;
-    vault.tasks = vault.tasks.map(task => {
-        if(task.id === taskId){
-            return {
-                ...task,
-                completed: !task.completed
-            };
-        }
-        return task;
-    });
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return;
 
-    saveVault(vault);
-
-    // renderTasks();
-    // renderProjects();
-
+    task.completed = !task.completed;
+    task.completedAt = task.completed ? new Date().toISOString() : null;
+    saveState(state);
 }
 
 // -------------
@@ -122,5 +129,13 @@ export function addProject({ title, deadline }) {
         deadline
     };
     state.projects.push(Project);
+    saveState(state);
+}
+
+export function toggleProjectComplete(projectId) {
+    const project = state.projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    project.completedAt = project.completedAt ? null : new Date().toISOString();
     saveState(state);
 }
