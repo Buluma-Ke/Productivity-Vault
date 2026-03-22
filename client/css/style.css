@@ -776,7 +776,12 @@ button.start--bored {
     background: none;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
+
 .nav-btn:hover {
     background-color: #212631;
     color: #bfc6d4;
+}
+
+.empty-card {
+    cursor: pointer;
 }

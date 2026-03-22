@@ -1,9 +1,10 @@
 import {state} from "./state.js";
 import { isArchived, getStreak, taskWarning, getProjectStats, getPerformanceData, calculateHabitStats, getHabitColor, getWeeklyWindowProgress, isProjectArchived } from "./helpers.js";
 
-function createEmptyCard(label = "+ Add new") {
+function createEmptyCard(label = "+ Add new", action = null) {
     const card = document.createElement("div");
     card.className = "empty-card";
+    if (action) card.dataset.action = action;
     card.innerHTML = `<span class="empty-card__label">${label}</span>`;
     return card;
 }
@@ -63,8 +64,8 @@ function renderHabits() {
     });
 
     // Placeholder always appended after real cards (acts as "add new" slot)
-    habitGrid.appendChild(createEmptyCard("+ Add a new habit"));
-    trackGrid.appendChild(createEmptyCard("+ Track a new habit"));
+    habitGrid.appendChild(createEmptyCard("+ Add a new habit", "habit"));
+    trackGrid.appendChild(createEmptyCard("+ Track a new habit", "habit"));
 }
 
 
@@ -333,7 +334,7 @@ export function renderFilteredTasks(filter = 'all') {
     tasks.forEach(task => renderTaskCard(task, taskColumns));
 
     if (filter !== 'archive') {
-        taskColumns.appendChild(createEmptyCard("+ Add a new task"));
+        taskColumns.appendChild(createEmptyCard("+ Add a new task", "task"));
     } else if (archivedTasks.length === 0) {
         taskColumns.appendChild(createEmptyCard("No archived tasks yet"));
     }
@@ -412,7 +413,7 @@ export function renderFilteredProjects(filter = 'active') {
     projects.forEach(project => renderprojectCard(project, projectGrid));
 
     if (filter !== 'archive') {
-        projectGrid.appendChild(createEmptyCard("+ Start a new project"));
+        projectGrid.appendChild(createEmptyCard("+ Start a new project", "project"));
     } else if (archived.length === 0) {
         projectGrid.appendChild(createEmptyCard("No archived projects yet"));
     }

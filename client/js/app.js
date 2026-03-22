@@ -89,6 +89,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
+
+        if (e.target.classList.contains('empty-card') || e.target.classList.contains('empty-card__label')) {
+            const card = e.target.closest('.empty-card');
+            const action = card?.dataset.action;
+
+            if (action === 'habit')   showHabitModal();
+            if (action === 'task')    showTaskModal();
+            if (action === 'project') showProjectModal();
+        }
  
     });
 
