@@ -1,4 +1,4 @@
-import { addHabit, markComplete, addTask, addProject, toggleTaskComplete } from "./state.js";
+import { addHabit, markComplete, addTask, addProject, toggleTaskComplete, deleteTask, deleteHabit, deleteProject  } from "./state.js";
 
 import { render, showHabitModal, hideHabitModal, showTaskModal, hideTaskModal, showProjectModal, hideProjectModal } from "./render.js";
 
@@ -41,6 +41,22 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.classList.remove('sidebar-overlay--visible');
     });
 
+
+    // Delete buttons
+
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+            const { type, id } = e.target.dataset;
+
+            if (type === 'task')    deleteTask(id);
+            if (type === 'habit')   deleteHabit(id);
+            if (type === 'project') deleteProject(id);
+
+            render();
+        }
+
+        // ... rest of your handlers
+    });
 
     // ----------------
     // Add new habit

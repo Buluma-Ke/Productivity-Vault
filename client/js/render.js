@@ -77,7 +77,10 @@ function renderHabitCard(habit, container) {
     const completedToday = habit.completions.includes(new Date().toISOString().split('T')[0]);
 
     card.innerHTML = `
-        <h4>${habit.title}</h4>
+        <div class="card-top">
+            <h4>${habit.title}</h4>
+            <button class="delete-btn" data-type="habit" data-id="${habit.id}">🗑</button>
+        </div>
         <div class="frequency">🎯 Weekly: ${habit.frequency}x</div>
         <div class="habit-calender"></div>
         <div>
@@ -324,15 +327,17 @@ function renderTaskCard(task, container) {
 
     const isCompleted = Boolean(task.completed);
 
-    card.innerHTML = `
+card.innerHTML = `
+    <div class="card-top">
         <h4>🧾 ${task.title}</h4>
-        <button class="start ${isCompleted ? 'start--done' : 'start--pending'}" id="${task.id}btn">
-            ${isCompleted ? '😊 Completed' : '😡 Not started'}
-        </button>
-        <p>📆 Due ${taskWarning(task)}</p>
-        <button class="task-complete" data-id="${task.id}">Mark as completed</button>
-    `;
-
+        <button class="delete-btn" data-type="task" data-id="${task.id}">🗑</button>
+    </div>
+    <button class="start ${isCompleted ? 'start--done' : 'start--pending'}" id="${task.id}btn">
+        ${isCompleted ? '😊 Completed' : '😡 Not started'}
+    </button>
+    <p>📆 Due ${taskWarning(task)}</p>
+    <button class="task-complete" data-id="${task.id}">Mark as completed</button>
+`;
 
     container.appendChild(card);
 }
@@ -401,8 +406,11 @@ function renderprojectCard(project, container){
             : `${stats.daysRemaining} days to go`;
 
     card.innerHTML = `
-        <h4>📌 ${project.title}</h4>
-        <div class="project-metadata"><p>🕐 Total related tasks = ${stats.total}</div>
+        <div class="card-top">
+            <h4>📌 ${project.title}</h4>
+            <button class="delete-btn" data-type="project" data-id="${project.id}">🗑</button>
+        </div>
+        <div class="project-metadata"><p>🕐 Total related tasks = ${stats.total}</p></div>
         <div class="project-metadata">
             <p>☘ Total incompleted tasks = ${stats.incomplete}</p>
             <p>🌺 Total completed tasks = ${stats.completed}</p>
@@ -412,6 +420,7 @@ function renderprojectCard(project, container){
         </div>
         <button class="project-completed">Completed</button>
     `;
+    
     container.appendChild(card);
 }
 
@@ -421,26 +430,32 @@ function renderprojectCard(project, container){
 
 function renderWeeklyCalender() {
     const calenderGrid = document.getElementById("calendar-grid");
+    const calenderHeader = document.getElementById("calendar-month-label");
 
-    if(!calenderGrid) return;
+    if (!calenderGrid) return;
 
-    const tasks = state.tasks;
+    const today = new Date();
+    if (calenderHeader) {
+        calenderHeader.textContent = today.toLocaleDateString('en-GB', {
+            month: 'long',
+            year: 'numeric'
+        });
+    }
 
-    renderWeeklyMonthlyCalender(calenderGrid, tasks);
+    renderWeeklyMonthlyCalender(calenderGrid, state.tasks);
 }
 
 
 function renderWeeklyMonthlyCalender(container, tasks = []) {
     if (!container) return;
 
-    // Clear existing grid content (container IS the grid)
     container.innerHTML = "";
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // --- Build Mon–Sun dates for the current week ---
-    const dow = today.getDay(); // 0 = Sun
+    // Build Mon–Sun dates for the current week
+    const dow = today.getDay();
     const monday = new Date(today);
     monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
 
@@ -450,17 +465,15 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
         return d;
     });
 
-    // --- Index tasks by dueDate string (YYYY-MM-DD) ---
+    // Index tasks by dueDate string
     const tasksByDate = {};
     tasks.forEach(task => {
         if (!task.dueDate) return;
-        if (!tasksByDate[task.dueDate]) {
-            tasksByDate[task.dueDate] = [];
-        }
+        if (!tasksByDate[task.dueDate]) tasksByDate[task.dueDate] = [];
         tasksByDate[task.dueDate].push(task);
     });
 
-    // --- Build each day column ---
+    // Build each day column
     weekDates.forEach(date => {
         const dateStr = date.getFullYear() + "-" +
             String(date.getMonth() + 1).padStart(2, "0") + "-" +
@@ -472,13 +485,16 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
         const dayCol = document.createElement("div");
         dayCol.className = "calendar-day" + (isToday ? " calendar-day--today" : "");
 
+        // Day header with name + number
         const dayHeader = document.createElement("div");
-        dayHeader.className = "calendar-day__header";
-        dayHeader.textContent = date.getDate();
-
+        dayHeader.className = "calendar-day__header" + (isToday ? " calendar-day__header--today" : "");
+        dayHeader.innerHTML = `
+            <span class="calendar-day__name">${date.toLocaleDateString('en-GB', { weekday: 'short' })}</span>
+            <span class="calendar-day__number">${date.getDate()}</span>
+        `;
         dayCol.appendChild(dayHeader);
 
-        // Container for tasks inside the day
+        // Task list
         const taskList = document.createElement("div");
         taskList.className = "calendar-day__tasks";
 
@@ -488,33 +504,25 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
             empty.textContent = "No tasks";
             taskList.appendChild(empty);
         } else {
-
             dayTasks.forEach(task => {
                 const card = document.createElement("div");
                 card.className = "task-card-calender";
 
                 card.innerHTML = `
                     <h4>🧾 ${task.title}</h4>
-                    <button class="start" id="${task.id}btn">😡 Not started</button>
-                    <p>📆 Due ${taskWarning(task)}</p>
-                    <button class="task-complete" data-id="${task.id}">
-                        Mark as completed
+                    <button class="start ${Boolean(task.completed) ? 'start--done' : 'start--pending'}" id="${task.id}btn">
+                        ${Boolean(task.completed) ? '😊 Completed' : '😡 Not started'}
                     </button>
+                    <p>📆 Due ${taskWarning(task)}</p>
+                    <button class="task-complete" data-id="${task.id}">Mark as completed</button>
                 `;
-
-                // Handle completed state (works for true OR 1)
-                if (Boolean(task.completed)) {
-                    const startBtn = card.querySelector(".start");
-                    startBtn.textContent = "🌺 Completed";
-                    startBtn.style.backgroundColor = "rgba(19, 109, 42, 0.35)";
-                }
 
                 taskList.appendChild(card);
             });
         }
 
         dayCol.appendChild(taskList);
-        container.appendChild(dayCol); // container IS the grid
+        container.appendChild(dayCol);
     });
 }
 

@@ -48,7 +48,7 @@ body{
         top: 0;
         left: 0;
         height: 100vh;
-        width: 75%;
+        width: 50%;
         min-width: 0;
         z-index: 999;
         background-color: #0A0E15;
@@ -218,8 +218,11 @@ header {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    width: 100%;       /* match header width */
+    width: 100%;
     box-sizing: border-box;
+    border: 1px solid #373F4E;
+    border-radius: 0.5em;
+    overflow: hidden;
 }
 .calendar-day {
     border: 1px solid #373F4E;
@@ -229,8 +232,8 @@ header {
     gap: 0.5rem;
     flex-direction: column;
     align-items: stretch;
-    justify-content: flex-start;  /* center content horizontally */
-    box-sizing: border-box;   /* ensures borders/padding don’t break alignment */
+    justify-content: flex-start;
+    box-sizing: border-box;
     overflow: hidden;
 }
 .task-card-calender {
@@ -625,4 +628,69 @@ button.start--bored {
 .overdue-label {
     color: #e06c6c;
     font-weight: 500;
+}
+
+
+.calendar-month-label {
+    font-size: 1em;
+    font-weight: 500;
+    color: #bfc6d4;
+    margin: 0 0 0.5rem;
+}
+.calendar-day__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #373F4E;
+    margin-bottom: 0.3rem;
+}
+.calendar-day__name {
+    font-size: 0.7em;
+    color: #667085;
+}
+.calendar-day__number {
+    font-size: 0.9em;
+    color: #bfc6d4;
+}
+.calendar-day__header--today .calendar-day__number {
+    background-color: #3f8efc;
+    color: #fff;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+}
+.calendar-day__header--today .calendar-day__name {
+    color: #3f8efc;
+}
+
+
+/*Delete button*/
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.3rem;
+}
+.card-top h4 {
+    margin: 0;
+}
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5em;
+    color: #667085;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+.delete-btn:hover {
+    color: #e06c6c;
 }

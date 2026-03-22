@@ -40,6 +40,23 @@ export async function saveState(state) {
         body: JSON.stringify(state)
     });
 }
+// drop tasks
+
+export function deleteTask(taskId) {
+    state.tasks = state.tasks.filter(t => t.id !== taskId);
+    saveState(state);
+}
+
+export function deleteHabit(habitId) {
+    state.habits = state.habits.filter(h => h.id !== habitId);
+    saveState(state);
+}
+
+export function deleteProject(projectId) {
+    state.projects = state.projects.filter(p => p.id !== projectId);
+    saveState(state);
+}
+
 
 // -------------
 // HABITS
