@@ -1,6 +1,6 @@
 import { addHabit, markComplete, addTask, addProject, toggleTaskComplete, deleteTask, deleteHabit, deleteProject  } from "./state.js";
 
-import { render, showHabitModal, hideHabitModal, showTaskModal, hideTaskModal, showProjectModal, hideProjectModal } from "./render.js";
+import { render, showHabitModal, hideHabitModal, showTaskModal, hideTaskModal, showProjectModal, hideProjectModal, renderFilteredTasks } from "./render.js";
 
 // import { loadState } from "./storage.js";
 import { state } from "./state.js";
@@ -53,6 +53,16 @@ document.addEventListener("DOMContentLoaded", () => {
             if (type === 'project') deleteProject(id);
 
             render();
+        }
+
+        if (e.target.classList.contains('task-filter-btn')) {
+            // Update active state
+            document.querySelectorAll('.task-filter-btn').forEach(btn => {
+                btn.classList.remove('task-filter-btn--active');
+            });
+            e.target.classList.add('task-filter-btn--active');
+
+            renderFilteredTasks(e.target.dataset.filter);
         }
 
         // ... rest of your handlers

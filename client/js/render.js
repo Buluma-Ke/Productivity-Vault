@@ -296,12 +296,38 @@ function renderTasks() {
     const taskColumns = document.getElementById("task-grid");
     if (!taskColumns) return;
 
+    // Default filter
+    renderFilteredTasks('all');
+}
+
+export function renderFilteredTasks(filter = 'all') {
+    const taskColumns = document.getElementById("task-grid");
+    if (!taskColumns) return;
+
     taskColumns.innerHTML = "";
 
-    state.tasks.forEach(task => {
-        renderTaskCard(task, taskColumns);
-    });
+    const today = new Date();
+    const todayISO = today.toISOString().split('T')[0];
 
+    const monday = new Date(today);
+    const dow = today.getDay();
+    monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+    const mondayISO = monday.toISOString().split('T')[0];
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    const sundayISO = sunday.toISOString().split('T')[0];
+
+    const filters = {
+        all:       () => state.tasks,
+        today:     () => state.tasks.filter(t => t.dueDate === todayISO),
+        week:      () => state.tasks.filter(t => t.dueDate >= mondayISO && t.dueDate <= sundayISO),
+        completed: () => state.tasks.filter(t => Boolean(t.completed))
+    };
+
+    const tasks = (filters[filter] || filters.all)();
+
+    tasks.forEach(task => renderTaskCard(task, taskColumns));
     taskColumns.appendChild(createEmptyCard("+ Add a new task"));
 }
 
@@ -420,7 +446,7 @@ function renderprojectCard(project, container){
         </div>
         <button class="project-completed">Completed</button>
     `;
-    
+
     container.appendChild(card);
 }
 

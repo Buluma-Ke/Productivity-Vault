@@ -694,3 +694,31 @@ button.start--bored {
 .delete-btn:hover {
     color: #e06c6c;
 }
+
+/*task filter menu*/
+
+.task-filter-menu {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #373F4E;
+    margin-bottom: 0.75rem;
+}
+.task-filter-btn {
+    padding: 0.4rem 1rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    border-radius: 0;
+    font-size: 0.85em;
+    cursor: pointer;
+    color: #667085;
+    background: none;
+    transition: color 0.2s ease, border-bottom-color 0.2s ease;
+}
+.task-filter-btn:hover {
+    color: #bfc6d4;
+}
+.task-filter-btn--active {
+    color: #3f8efc;
+    border-bottom: 1px solid #3f8efc;
+}

@@ -112,24 +112,13 @@
                 <header>
                     <h2>💾 TASKS</h2>
                 </header>
-
-                <div class="task-columns" id="task-grid">
-                    <div class="task-column">
-                        <h4>Today</h4>
-                        <div class="task-card">Email</div>
-                        <div class="task-card">Content Creation</div>
-                    </div>
-
-                    <div class="task-column">
-                        <h4>Inbox</h4>
-                        <div class="task-card">Learn Framer</div>
-                    </div>
-
-                    <div class="task-column">
-                        <h4>Completed</h4>
-                    </div>
+                <div class="task-filter-menu">
+                    <button class="task-filter-btn task-filter-btn--active" data-filter="all">All</button>
+                    <button class="task-filter-btn" data-filter="today">Today</button>
+                    <button class="task-filter-btn" data-filter="week">This week</button>
+                    <button class="task-filter-btn" data-filter="completed">Completed</button>
                 </div>
-
+                <div class="task-columns" id="task-grid"></div>
             </section>
 
 
