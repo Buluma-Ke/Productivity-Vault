@@ -332,7 +332,7 @@ function renderTaskCard(task, container) {
         <p>📆 Due ${taskWarning(task)}</p>
         <button class="task-complete" data-id="${task.id}">Mark as completed</button>
     `;
-    
+
 
     container.appendChild(card);
 }
@@ -394,19 +394,24 @@ function renderprojectCard(project, container){
 
     const stats = getProjectStats(project.id)
 
+    const daysLabel = stats.daysRemaining === null
+        ? 'No deadline set'
+        : stats.daysRemaining < 0
+            ? `<span class="overdue-label">⚠ Past due</span>`
+            : `${stats.daysRemaining} days to go`;
+
     card.innerHTML = `
         <h4>📌 ${project.title}</h4>
-        <div class="project-metadata"><p>🕐Total related tasks = ${stats.total}</div>
+        <div class="project-metadata"><p>🕐 Total related tasks = ${stats.total}</div>
         <div class="project-metadata">
-            <p>☘Total incompleted tasks = ${stats.incomplete}</p>
-            <p>🌺Total completed tasks = ${stats.completed}</p>
+            <p>☘ Total incompleted tasks = ${stats.incomplete}</p>
+            <p>🌺 Total completed tasks = ${stats.completed}</p>
         </div>
         <div>
-        <p>📆 ${stats.daysRemaining} Days to go
+            <p>📆 ${daysLabel}</p>
         </div>
-        <button class="project completed">Completed</button>
+        <button class="project-completed">Completed</button>
     `;
-
     container.appendChild(card);
 }
 
