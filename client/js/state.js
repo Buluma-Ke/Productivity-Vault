@@ -131,3 +131,11 @@ export function addProject({ title, deadline }) {
     state.projects.push(Project);
     saveState(state);
 }
+
+export function toggleProjectComplete(projectId) {
+    const project = state.projects.find(p => p.id === projectId);
+    if (!project) return;
+
+    project.completedAt = project.completedAt ? null : new Date().toISOString();
+    saveState(state);
+}

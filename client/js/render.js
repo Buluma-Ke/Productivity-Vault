@@ -1,5 +1,5 @@
 import {state} from "./state.js";
-import { isArchived, getStreak, taskWarning, getProjectStats, getPerformanceData, calculateHabitStats, getHabitColor, getWeeklyWindowProgress } from "./helpers.js";
+import { isArchived, getStreak, taskWarning, getProjectStats, getPerformanceData, calculateHabitStats, getHabitColor, getWeeklyWindowProgress, isProjectArchived } from "./helpers.js";
 
 function createEmptyCard(label = "+ Add new") {
     const card = document.createElement("div");
@@ -388,15 +388,36 @@ card.innerHTML = `
 function renderProject() {
     const projectGrid = document.getElementById("project-grid");
     if (!projectGrid) return;
+    renderFilteredProjects('active');
+}
+
+export function renderFilteredProjects(filter = 'active') {
+    const projectGrid = document.getElementById("project-grid");
+    if (!projectGrid) return;
 
     projectGrid.innerHTML = "";
 
-    state.projects.forEach(project => {
-        renderprojectCard(project, projectGrid);
-    });
+    const active   = state.projects.filter(p => !isProjectArchived(p) && !p.completedAt);
+    const completed = state.projects.filter(p => p.completedAt && !isProjectArchived(p));
+    const archived  = state.projects.filter(p => isProjectArchived(p));
 
-    projectGrid.appendChild(createEmptyCard("+ Start a new project"));
+    const filters = {
+        active,
+        completed,
+        archive: archived
+    };
+
+    const projects = filters[filter] || active;
+
+    projects.forEach(project => renderprojectCard(project, projectGrid));
+
+    if (filter !== 'archive') {
+        projectGrid.appendChild(createEmptyCard("+ Start a new project"));
+    } else if (archived.length === 0) {
+        projectGrid.appendChild(createEmptyCard("No archived projects yet"));
+    }
 }
+
 
 // project tasks
 function populateProjectOptions(){
@@ -427,17 +448,18 @@ export function hideProjectModal(){
 }
 
 // project card
-function renderprojectCard(project, container){
+function renderprojectCard(project, container) {
     const card = document.createElement("div");
-    card.className = "project-card";
+    card.className = "project-card" + (isProjectArchived(project) ? " project-card--archived" : "");
 
-    const stats = getProjectStats(project.id)
-
+    const stats = getProjectStats(project.id);
     const daysLabel = stats.daysRemaining === null
         ? 'No deadline set'
         : stats.daysRemaining < 0
             ? `<span class="overdue-label">⚠ Past due</span>`
             : `${stats.daysRemaining} days to go`;
+
+    const isCompleted = Boolean(project.completedAt);
 
     card.innerHTML = `
         <div class="card-top">
@@ -449,10 +471,10 @@ function renderprojectCard(project, container){
             <p>☘ Total incompleted tasks = ${stats.incomplete}</p>
             <p>🌺 Total completed tasks = ${stats.completed}</p>
         </div>
-        <div>
-            <p>📆 ${daysLabel}</p>
-        </div>
-        <button class="project-completed">Completed</button>
+        <div><p>📆 ${daysLabel}</p></div>
+        <button class="project-complete-btn ${isCompleted ? 'project-complete-btn--done' : ''}" data-id="${project.id}">
+            ${isCompleted ? '✅ Completed' : 'Mark complete'}
+        </button>
     `;
 
     container.appendChild(card);

@@ -727,3 +727,35 @@ button.start--bored {
     opacity: 0.6;
     border-left: 2px solid #373F4E;
 }
+
+.project-filter-btn {
+    padding: 0.4rem 1rem;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    border-radius: 0;
+    font-size: 0.85em;
+    cursor: pointer;
+    color: #667085;
+    background: none;
+    transition: color 0.2s ease, border-bottom-color 0.2s ease;
+}
+.project-filter-btn:hover {
+    color: #bfc6d4;
+}
+.project-filter-btn--active {
+    color: #3f8efc;
+    border-bottom: 2px solid #3f8efc;
+}
+.project-card--archived {
+    opacity: 0.6;
+    border-left: 2px solid #373F4E;
+}
+.project-complete-btn {
+    margin-top: 0.3rem;
+    width: 100%;
+}
+.project-complete-btn--done {
+    background-color: rgba(19, 109, 42, 0.35);
+    color: #7ecfa0;
+}

@@ -318,3 +318,11 @@ export function isArchived(task) {
     const diffHrs = (now - completedAt) / (1000 * 60 * 60);
     return diffHrs >= 24;
 }
+
+export function isProjectArchived(project) {
+    if (!project.completedAt) return false;
+    const completedAt = new Date(project.completedAt);
+    const now = new Date();
+    const diffHrs = (now - completedAt) / (1000 * 60 * 60);
+    return diffHrs >= 24;
+}

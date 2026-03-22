@@ -128,29 +128,13 @@
                 <header>
                     <h2>📁 PROJECT - MANAGER</h2>
                 </header>
-
-                <div class="project-grid" id="project-grid">
-                    <article class="project-card">
-                        <h4>Notion Template</h4>
-                        <p>Tasks: 4</p>
-                        <p>Status: Completed</p>
-                    </article>
-
-                    <article class="project-card">
-                        <h4>Content Creation</h4>
-                        <p>Tasks: 4</p>
-                        <p>Status: Completed</p>
-                    </article>
-
-                    <article class="project-card">
-                        <h4>Learn Framer</h4>
-                        <p>Tasks: 4</p>
-                        <p>Status: Completed</p>
-                    </article>
+                <div class="task-filter-menu">
+                    <button class="project-filter-btn project-filter-btn--active" data-filter="active">Active</button>
+                    <button class="project-filter-btn" data-filter="completed">Completed</button>
+                    <button class="project-filter-btn" data-filter="archive">Archive 🗂</button>
                 </div>
-
+                <div class="project-grid" id="project-grid"></div>
             </section>
-
 
             <!--CALENDAR-->
             <section class="panel">

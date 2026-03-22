@@ -61,8 +61,8 @@ app.post("/state", (req, res) => {
       // 1️⃣ Projects
       // --------------------------
       db.run("DELETE FROM projects");
-      const projectStmt = db.prepare("INSERT INTO projects (id, title, deadline) VALUES (?, ?, ?)");
-      projects.forEach(p => projectStmt.run([p.id, p.title, p.deadline]));
+      const projectStmt = db.prepare("INSERT INTO projects (id, title, deadline, completedAt) VALUES (?, ?, ?, ?)");
+      projects.forEach(p => projectStmt.run([p.id, p.title, p.deadline,  p.completedAt || null]));
       projectStmt.finalize();
 
       // --------------------------
