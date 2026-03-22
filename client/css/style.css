@@ -345,3 +345,97 @@ button.start{
     background-color: rgba(202, 51, 51, 0.35);
     /* color: rgba(19, 109, 42, 0.35);*/
 }
+
+
+/* PERFORMANCE OVERVIEW */
+
+.perf-overview-card {
+    background-color: #212631;
+    border-radius: 0.5em;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.8em;
+}
+.perf-intro {
+    margin: 0;
+    line-height: 1.5;
+}
+.perf-week-badge {
+    display: inline-block;
+    background-color: rgba(255,255,255,0.06);
+    border: 1px solid #373F4E;
+    border-radius: 0.3em;
+    padding: 0.1em 0.4em;
+    font-size: 0.85em;
+    margin-left: 0.3rem;
+}
+.perf-section-title {
+    margin: 0.5rem 0 0.1rem;
+    font-size: 0.95em;
+    color: #bfc6d4;
+    border-bottom: 1px solid #373F4E;
+    padding-bottom: 0.2rem;
+}
+.perf-sub {
+    margin: 0;
+    color: #667085;
+    font-size: 0.85em;
+}
+.perf-stat {
+    margin: 0.2rem 0;
+}
+.perf-count {
+    background-color: rgba(100, 200, 130, 0.12);
+    color: #7ecfa0;
+    border-radius: 0.3em;
+    padding: 0.1em 0.4em;
+}
+.perf-task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.perf-task-list li {
+    color: #bfc6d4;
+}
+.perf-task-list--overdue li {
+    color: #e06c6c;
+}
+.perf-task--done {
+    color: #667085 !important;
+    text-decoration: line-through;
+}
+.perf-empty {
+    color: #667085;
+    font-style: italic;
+}
+.perf-overdue-label {
+    margin: 0.3rem 0 0.1rem;
+    color: #e06c6c;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+.perf-notifications {
+    margin-top: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.perf-notify--ok {
+    margin: 0;
+    color: #7ecfa0;
+}
+.perf-notify--warn {
+    margin: 0;
+    color: #e06c6c;
+}
+.perf-due-date {
+    font-size: 0.8em;
+    color: #667085;
+    margin-left: 0.3rem;
+}

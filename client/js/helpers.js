@@ -219,3 +219,46 @@ function calculateHabitStats(habitId, completions, referenceDate = new Date()) {
     streak
   };
 }
+
+
+export function getPerformanceData() {
+    const today = new Date();
+    const todayISO = today.toISOString().split('T')[0];
+
+    // Week number
+    const startOfYear = new Date(today.getFullYear(), 0, 1);
+    const weekNum = Math.ceil(((today - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
+
+    // Today's tasks
+    const todayTasks = state.tasks.filter(t => t.dueDate === todayISO);
+    const completedToday = todayTasks.filter(t => Boolean(t.completed));
+
+    // Overdue (before today, not completed)
+    const overdueTasks = state.tasks.filter(t => t.dueDate < todayISO && !Boolean(t.completed));
+
+    // Overdue last 7 days
+    const lastWeekISO = new Date(today.setDate(today.getDate() - 7)).toISOString().split('T')[0];
+    const overdueLastWeek = state.tasks.filter(t =>
+        t.dueDate >= lastWeekISO &&
+        t.dueDate < todayISO &&
+        !Boolean(t.completed)
+    );
+
+    // Upcoming this month (after today, before end of month)
+    const endOfMonthISO = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+        .toISOString().split('T')[0];
+    const upcomingThisMonth = state.tasks.filter(t =>
+        t.dueDate > todayISO &&
+        t.dueDate <= endOfMonthISO &&
+        !Boolean(t.completed)
+    );
+
+    return {
+        weekNum,
+        todayTasks,
+        completedToday,
+        overdueTasks,
+        overdueLastWeek,
+        upcomingThisMonth
+    };
+}

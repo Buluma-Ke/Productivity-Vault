@@ -1,5 +1,5 @@
 import {state} from "./state.js";
-import {getStreak, taskWarning, getProjectStats } from "./helpers.js"
+import {getStreak, taskWarning, getProjectStats, getPerformanceData } from "./helpers.js"
 
 
 function createEmptyCard(label = "+ Add new") {
@@ -45,6 +45,7 @@ export function render(){
     renderTasks();
     renderProject();
     renderWeeklyCalender();
+    renderPerformanceOverview();
 }
 
 function renderHabits() {
@@ -503,4 +504,71 @@ function renderHabitStats() {
 
 function renderHabitStatsCards(container, habits = []) {
 
+}
+
+
+
+// PERFORMANCE
+
+export function renderPerformanceOverview() {
+    const container = document.getElementById("performance-overview");
+    if (!container) return;
+
+    const today = new Date();
+    const dayName = today.toLocaleDateString('en-GB', { weekday: 'long' });
+    const fullDate = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const {
+        weekNum,
+        todayTasks,
+        completedToday,
+        overdueTasks,
+        overdueLastWeek,
+        upcomingThisMonth
+    } = getPerformanceData();
+
+    container.innerHTML = `
+        <div class="perf-overview-card">
+            <h4>🔥Performance Overview</h4>
+            <p class="perf-intro">
+                Today is <strong>${dayName}</strong>, ${fullDate}
+                <span class="perf-week-badge">(Week ${weekNum} of the year</span>
+            </p>
+
+            <h3 class="perf-section-title">Task status overview</h3>
+            <p class="perf-sub">Here's a quick glimpse of your day so far;</p>
+            <p class="perf-stat">
+                To-do: <span class="perf-count">${completedToday.length}/${todayTasks.length}</span>
+            </p>
+            <ul class="perf-task-list">
+                ${todayTasks.length
+                    ? todayTasks.map(t => `
+                        <li class="${Boolean(t.completed) ? 'perf-task--done' : ''}">
+                            ${Boolean(t.completed) ? '✓' : '○'} ${t.title}
+                        </li>`).join('')
+                    : '<li class="perf-empty">No tasks due today</li>'
+                }
+            </ul>
+
+            <h3 class="perf-section-title">Due & upcoming tasks</h3>
+            ${overdueTasks.length
+                ? `<p class="perf-overdue-label">Overdue</p>
+                   <ul class="perf-task-list perf-task-list--overdue">
+                       ${overdueTasks.map(t => `
+                           <li>⚠ ${t.title} <span class="perf-due-date">${t.dueDate}</span></li>
+                       `).join('')}
+                   </ul>`
+                : ''
+            }
+
+            <div class="perf-notifications">
+                <p class="${overdueLastWeek.length > 0 ? 'perf-notify--warn' : 'perf-notify--ok'}">
+                    ⚠️You have ${overdueLastWeek.length} task${overdueLastWeek.length !== 1 ? 's' : ''} overdue from last week
+                </p>
+                <p class="perf-notify--ok">
+                    📆You have ${upcomingThisMonth.length} upcoming task${upcomingThisMonth.length !== 1 ? 's' : ''} this month
+                </p>
+            </div>
+        </div>
+    `;
 }
