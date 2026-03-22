@@ -318,22 +318,21 @@ export function hideTaskModal(){
 }
 
 
-function renderTaskCard(task, container){
+function renderTaskCard(task, container) {
     const card = document.createElement("div");
     card.className = "task-card";
 
+    const isCompleted = Boolean(task.completed);
+
     card.innerHTML = `
         <h4>🧾 ${task.title}</h4>
-        <button class="start" id=${task.id}btn >😡Not started</button>
+        <button class="start ${isCompleted ? 'start--done' : 'start--pending'}" id="${task.id}btn">
+            ${isCompleted ? '😊 Completed' : '😡 Not started'}
+        </button>
         <p>📆 Due ${taskWarning(task)}</p>
-        <button class="task-complete" data-id=${task.id} >Mark as completed</button>
-
+        <button class="task-complete" data-id="${task.id}">Mark as completed</button>
     `;
-    if(Boolean(task.completed)){
-        const startbtn = card.querySelector(`.start`);
-        startbtn.textContent = "🌺completed";
-        startbtn.style.backgroundColor = "rgba(19, 109, 42, 0.35)";
-    }
+    
 
     container.appendChild(card);
 }

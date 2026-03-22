@@ -108,6 +108,55 @@ document.addEventListener("DOMContentLoaded", () => {
             render();
         }
     })
+
+    document.addEventListener('click', (e) => {
+
+    // Status button — two step toggle
+    if (e.target.classList.contains('start')) {
+        const btn = e.target;
+
+        if (btn.classList.contains('start--pending')) {
+            // step 1: not started → bored
+            btn.textContent = '😑 ...';
+            btn.classList.replace('start--pending', 'start--bored');
+
+        } else if (btn.classList.contains('start--bored')) {
+            // step 2: bored → completed, change state
+            const taskId = btn.id.replace('btn', '');
+            toggleTaskComplete(taskId);
+            btn.textContent = '😊 Completed';
+            btn.classList.replace('start--bored', 'start--done');
+
+        } else if (btn.classList.contains('start--done')) {
+            // pressing again goes back to bored
+            btn.textContent = '😑 ...';
+            btn.classList.replace('start--done', 'start--bored');
+        }
+    }
+
+    // Mark as completed — changes state directly
+    if (e.target.classList.contains('task-complete')) {
+        const taskId = e.target.dataset.id;
+        toggleTaskComplete(taskId);
+
+        const card = e.target.closest('.task-card');
+        if (card) {
+            const statusBtn = card.querySelector('.start');
+            statusBtn.textContent = '😊 Completed';
+            statusBtn.classList.remove('start--pending', 'start--bored');
+            statusBtn.classList.add('start--done');
+        }
+    }
+
+    // Habit complete button
+    if (e.target.classList.contains("complete-btn")) {
+        const habitId = e.target.dataset.habitId;
+        markComplete(habitId);
+        render();
+    }
+
+});
+
     // ------------------------
 
     // -----------------------

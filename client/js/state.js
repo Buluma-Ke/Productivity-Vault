@@ -92,24 +92,13 @@ export function addTask({ title, dueDate, projectId }) {
     saveState(state);
 }
 
+// ✅ fixed — updates state and persists to server
 export function toggleTaskComplete(taskId) {
-    const vault = getVault()
-    // Find the Task ID;
-    vault.tasks = vault.tasks.map(task => {
-        if(task.id === taskId){
-            return {
-                ...task,
-                completed: !task.completed
-            };
-        }
-        return task;
-    });
+    const task = state.tasks.find(t => t.id === taskId);
+    if (!task) return;
 
-    saveVault(vault);
-
-    // renderTasks();
-    // renderProjects();
-
+    task.completed = !task.completed;
+    saveState(state);
 }
 
 // -------------
