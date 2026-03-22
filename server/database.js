@@ -14,7 +14,7 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS projects (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
-      completedAt TEXT
+      completedAt TEXT,
       deadline TEXT
     )
   `);

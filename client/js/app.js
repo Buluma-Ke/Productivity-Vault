@@ -80,7 +80,16 @@ document.addEventListener("DOMContentLoaded", () => {
             toggleProjectComplete(projectId);
             render();
         }
- s
+
+        // Navigation
+        if (e.target.classList.contains('nav-btn')) {
+            const targetId = e.target.dataset.target;
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+ 
     });
 
     // ----------------

@@ -759,3 +759,24 @@ button.start--bored {
     background-color: rgba(19, 109, 42, 0.35);
     color: #7ecfa0;
 }
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.nav-btn {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border: none;
+    border-radius: 0.4em;
+    color: #667085;
+    font-size: 0.85em;
+    cursor: pointer;
+    background: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.nav-btn:hover {
+    background-color: #212631;
+    color: #bfc6d4;
+}
