@@ -25,7 +25,9 @@ db.serialize(() => {
       dueDate TEXT,
       completed INTEGER DEFAULT 0,
       projectId TEXT,
+      completedAt TEXT,
       FOREIGN KEY(projectId) REFERENCES projects(id)
+      
     )
   `);
 

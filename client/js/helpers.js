@@ -307,3 +307,14 @@ export function getWeeklyWindowProgress(habit) {
         percentage: Math.round((completed / 7) * 100)
     };
 }
+
+
+// isArchived
+
+export function isArchived(task) {
+    if (!task.completed || !task.completedAt) return false;
+    const completedAt = new Date(task.completedAt);
+    const now = new Date();
+    const diffHrs = (now - completedAt) / (1000 * 60 * 60);
+    return diffHrs >= 24;
+}

@@ -722,3 +722,8 @@ button.start--bored {
     color: #3f8efc;
     border-bottom: 1px solid #3f8efc;
 }
+
+.task-card--archived {
+    opacity: 0.6;
+    border-left: 2px solid #373F4E;
+}

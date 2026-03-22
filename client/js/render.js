@@ -1,5 +1,5 @@
 import {state} from "./state.js";
-import { getStreak, taskWarning, getProjectStats, getPerformanceData, calculateHabitStats, getHabitColor, getWeeklyWindowProgress } from "./helpers.js";
+import { isArchived, getStreak, taskWarning, getProjectStats, getPerformanceData, calculateHabitStats, getHabitColor, getWeeklyWindowProgress } from "./helpers.js";
 
 function createEmptyCard(label = "+ Add new") {
     const card = document.createElement("div");
@@ -309,26 +309,34 @@ export function renderFilteredTasks(filter = 'all') {
     const today = new Date();
     const todayISO = today.toISOString().split('T')[0];
 
-    const monday = new Date(today);
     const dow = today.getDay();
+    const monday = new Date(today);
     monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
     const mondayISO = monday.toISOString().split('T')[0];
-
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
     const sundayISO = sunday.toISOString().split('T')[0];
 
+    const activeTasks = state.tasks.filter(t => !isArchived(t));
+    const archivedTasks = state.tasks.filter(t => isArchived(t));
+
     const filters = {
-        all:       () => state.tasks,
-        today:     () => state.tasks.filter(t => t.dueDate === todayISO),
-        week:      () => state.tasks.filter(t => t.dueDate >= mondayISO && t.dueDate <= sundayISO),
-        completed: () => state.tasks.filter(t => Boolean(t.completed))
+        all:       () => activeTasks,
+        today:     () => activeTasks.filter(t => t.dueDate === todayISO),
+        week:      () => activeTasks.filter(t => t.dueDate >= mondayISO && t.dueDate <= sundayISO),
+        completed: () => activeTasks.filter(t => Boolean(t.completed)),
+        archive:   () => archivedTasks
     };
 
     const tasks = (filters[filter] || filters.all)();
 
     tasks.forEach(task => renderTaskCard(task, taskColumns));
-    taskColumns.appendChild(createEmptyCard("+ Add a new task"));
+
+    if (filter !== 'archive') {
+        taskColumns.appendChild(createEmptyCard("+ Add a new task"));
+    } else if (archivedTasks.length === 0) {
+        taskColumns.appendChild(createEmptyCard("No archived tasks yet"));
+    }
 }
 
 
@@ -349,7 +357,7 @@ export function hideTaskModal(){
 
 function renderTaskCard(task, container) {
     const card = document.createElement("div");
-    card.className = "task-card";
+    card.className = "task-card" + (isArchived(task) ? " task-card--archived" : "");
 
     const isCompleted = Boolean(task.completed);
 

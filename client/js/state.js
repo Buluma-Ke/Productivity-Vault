@@ -115,6 +115,7 @@ export function toggleTaskComplete(taskId) {
     if (!task) return;
 
     task.completed = !task.completed;
+    task.completedAt = task.completed ? new Date().toISOString() : null;
     saveState(state);
 }
 
