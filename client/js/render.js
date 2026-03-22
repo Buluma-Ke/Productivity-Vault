@@ -1,6 +1,5 @@
 import {state} from "./state.js";
-import { getStreak, taskWarning, getProjectStats, getPerformanceData, calculateHabitStats } from "./helpers.js";
-
+import { getStreak, taskWarning, getProjectStats, getPerformanceData, calculateHabitStats, getHabitColor, getWeeklyWindowProgress } from "./helpers.js";
 
 function createEmptyCard(label = "+ Add new") {
     const card = document.createElement("div");
@@ -69,34 +68,37 @@ function renderHabits() {
 }
 
 
-function renderHabitCard(habit, container){
+function renderHabitCard(habit, container) {
     const card = document.createElement("div");
     card.className = "habit-card";
+
+    const { completed, total, percentage } = getWeeklyWindowProgress(habit);
+    const color = getHabitColor(habit.id);
+    const completedToday = habit.completions.includes(new Date().toISOString().split('T')[0]);
 
     card.innerHTML = `
         <h4>${habit.title}</h4>
         <div class="frequency">🎯 Weekly: ${habit.frequency}x</div>
         <div class="habit-calender"></div>
         <div>
-            <p>Completed Today</p>
+            <p class="completed-today completed-today--${completedToday ? color : 'default'}">
+                ${completedToday ? '✅' : '○'} Completed Today
+            </p>
             <div class="progress-div">
-                Progress - <div class="cntainer">
-                                <div class="progress-bar" id="myBar"></div>
-                            </div>
-                <p id="label">0%</p>
+                <div class="progress-track">
+                    <div class="progress-bar progress-bar--${color}" style="width: ${percentage}%"></div>
+                </div>
+                <span class="progress-label">${percentage}%</span>
+                <span class="progress-fraction">${completed}/${total}</span>
             </div>
             <p>Streak 🔥${getStreak(habit)} days</p>
         </div>
-
-
     `;
 
     container.appendChild(card);
 
-    // Render calender calender grid inside the card
     const calendarGrid = card.querySelector(".habit-calender");
     renderCalendar(calendarGrid, habit);
-
 }
 
 //------------------------------

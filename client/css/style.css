@@ -482,3 +482,53 @@ button.start{
     padding: 0.1em 0.35em;
     margin-left: 0.3rem;
 }
+
+
+/* Progress bar */
+
+.progress-div {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.3rem 0;
+}
+.progress-track {
+    flex: 1;
+    height: 8px;
+    background-color: #373F4E;
+    border-radius: 99px;
+    overflow: hidden;
+}
+.progress-bar {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+.progress-bar--blue   { background-color: #3f8efc; }
+.progress-bar--green  { background-color: #7ecfa0; }
+.progress-bar--orange { background-color: #d88a4d; }
+.progress-bar--yellow { background-color: #e0c94d; }
+
+.progress-label {
+    font-size: 0.75em;
+    color: #bfc6d4;
+    min-width: 2.5rem;
+    text-align: right;
+}
+.progress-fraction {
+    font-size: 0.75em;
+    color: #667085;
+    min-width: 2rem;
+}
+
+/*Completed today*/
+
+.completed-today {
+    margin: 0.2rem 0;
+    transition: color 0.3s ease;
+}
+.completed-today--default { color: #667085; }
+.completed-today--blue    { color: #3f8efc; }
+.completed-today--green   { color: #7ecfa0; }
+.completed-today--orange  { color: #d88a4d; }
+.completed-today--yellow  { color: #e0c94d; }

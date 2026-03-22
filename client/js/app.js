@@ -57,14 +57,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Mark day complete
 
-
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains("complete-btn")) {
-            // get ID from the data attribute
             const habitId = e.target.dataset.habitId;
             markComplete(habitId);
+            render(); // <-- inside the if
         }
-        render()
     })
     // ------------------------------------
 

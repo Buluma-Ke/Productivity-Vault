@@ -262,3 +262,48 @@ export function getPerformanceData() {
         upcomingThisMonth
     };
 }
+
+
+
+// habit progress bar ad color
+
+// Assigns a random progress bar color on creation, seeded by habit id
+export function getHabitColor(habitId) {
+    const colors = ['blue', 'green', 'orange', 'yellow'];
+    // Use the id string to consistently return the same color for the same habit
+    const index = habitId.charCodeAt(0) % colors.length;
+    return colors[index];
+}
+
+// Returns progress within the current 7-day window starting from startDate
+export function getWeeklyWindowProgress(habit) {
+    const start = new Date(habit.startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // How many days since the habit started (capped at 7)
+    const daysSinceStart = Math.floor((today - start) / 86400000);
+    const currentWeekIndex = Math.floor(daysSinceStart / 7); // which 7-day window we're in
+
+    const windowStart = new Date(start);
+    windowStart.setDate(start.getDate() + currentWeekIndex * 7);
+
+    const completionSet = new Set(habit.completions);
+    let completed = 0;
+
+    for (let i = 0; i < 7; i++) {
+        const day = new Date(windowStart);
+        day.setDate(windowStart.getDate() + i);
+        if (day > today) break;
+        const iso = day.toISOString().split('T')[0];
+        if (completionSet.has(iso)) completed++;
+    }
+
+    return {
+        completed,
+        total: 7,
+        percentage: Math.round((completed / 7) * 100)
+    };
+}
