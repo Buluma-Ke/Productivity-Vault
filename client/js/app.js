@@ -25,6 +25,23 @@ document.addEventListener("DOMContentLoaded", () => {
     init();
 
 
+    // Toggle side bar
+
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('sidebar--open');
+        overlay.classList.toggle('sidebar-overlay--visible');
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('sidebar--open');
+        overlay.classList.remove('sidebar-overlay--visible');
+    });
+
+
     // ----------------
     // Add new habit
     const newHabitButton = document.getElementById('openHabitModal');

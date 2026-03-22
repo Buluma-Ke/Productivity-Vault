@@ -25,23 +25,73 @@ body{
     user-select: none;
 
 }
+
 .sidebar {
     flex: 0 0 20%;
-    flex-direction: column;
     max-width: 700px;
     min-width: 240px;
-    gap: 1.5rem;
-    transition: all 0.5s ease;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    transition: all 0.3s ease;
 }
-@media (max-width: 700px){
-    .sidebar{
-        width: auto;
-        min-width: auto;
-        padding: 0;
-        overflow: hidden;
-        display: none;
+.sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 75%;
+        min-width: 0;
+        z-index: 999;
+        background-color: #0A0E15;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        padding: 1rem;
+    }
+    .sidebar.sidebar--open {
+        transform: translateX(0);
     }
 }
+
+.sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1000;
+    background: #212631;
+    border: 1px solid #373F4E;
+    color: #bfc6d4;
+    border-radius: 0.4em;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    font-size: 1rem;
+}
+@media (max-width: 700px) {
+    .sidebar-toggle {
+        display: block;
+    }
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+.sidebar-overlay.sidebar-overlay--visible {
+    display: block;
+}
+
 .sidebar-section {
     display: flex;
     flex-direction: column;
@@ -143,6 +193,7 @@ header {
 }
 .project-grid {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
 }
 .project-card {
