@@ -1,5 +1,5 @@
 import {state} from "./state.js";
-import {getStreak, taskWarning, getProjectStats, getPerformanceData } from "./helpers.js"
+import { getStreak, taskWarning, getProjectStats, getPerformanceData, calculateHabitStats } from "./helpers.js";
 
 
 function createEmptyCard(label = "+ Add new") {
@@ -46,6 +46,7 @@ export function render(){
     renderProject();
     renderWeeklyCalender();
     renderPerformanceOverview();
+    renderHabitStats();
 }
 
 function renderHabits() {
@@ -490,21 +491,6 @@ function renderWeeklyMonthlyCalender(container, tasks = []) {
 }
 
 
-// HABIT-STATISTICS
-
-function renderHabitStats() {
-    const habitStat = document.getElementById("habit-stat");
-
-    if(!habitStat) return;
-
-    const habits = state.habits;
-
-    renderHabitStatsCards(habitStat, habits);
-}
-
-function renderHabitStatsCards(container, habits = []) {
-
-}
 
 
 
@@ -571,4 +557,50 @@ export function renderPerformanceOverview() {
             </div>
         </div>
     `;
+}
+
+
+// HABIT STATISTICS
+
+function renderHabitStats() {
+    const habitStat = document.getElementById("habit-stat");
+    if (!habitStat) return;
+
+    habitStat.innerHTML = "";
+    renderHabitStatsCards(habitStat, state.habits);
+}
+
+function renderHabitStatsCards(container, habits = []) {
+    if (habits.length === 0) {
+        container.appendChild(createEmptyCard("No habits yet"));
+        return;
+    }
+
+    habits.forEach(habit => {
+        const { completedThisWeek, missedDays, streak } = calculateHabitStats(habit);
+
+        const card = document.createElement("div");
+        card.className = "habit-stat-card";
+
+        card.innerHTML = `
+            <h4 class="habit-stat-card__title">${habit.title}</h4>
+            <div class="habit-stat-card__row">
+                <span class="habit-stat-card__label">This week</span>
+                <span class="habit-stat-card__value">${completedThisWeek} / 7</span>
+            </div>
+            <div class="habit-stat-card__row">
+                <span class="habit-stat-card__label">Days missed</span>
+                <span class="habit-stat-card__value habit-stat-card__value--missed">${missedDays}</span>
+            </div>
+            <div class="habit-stat-card__row">
+                <span class="habit-stat-card__label">Streak</span>
+                <span class="habit-stat-card__value">
+                    🔥 ${streak} day${streak !== 1 ? 's' : ''}
+                    ${streak <= 1 ? '<span class="habit-stat-card__badge">New record</span>' : ''}
+                </span>
+            </div>
+        `;
+
+        container.appendChild(card);
+    });
 }

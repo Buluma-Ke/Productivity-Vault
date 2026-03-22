@@ -188,36 +188,36 @@ function filterCompletionsThisWeek(habitId, completions, referenceDate = new Dat
     });
 }
 
-function calculateHabitStats(habitId, completions, referenceDate = new Date()) {
-  const completedThisWeek = filterCompletionsThisWeek(habitId, completions, referenceDate);
-  const completedDates = completedThisWeek.map(c => c.date);
+export function calculateHabitStats(habit, referenceDate = new Date()) {
+    const completionSet = new Set(habit.completions); // completions are date strings
 
-  const weekStart = getWeekStart(referenceDate);
-  let missedDays = 0;
+    const weekStart = getWeekStart(referenceDate);
+    const weekEnd = getWeekEnd(referenceDate);
 
-  // Count missed days in the week
-  for (let i = 0; i < 7; i++) {
-    const checkDate = new Date(weekStart);
-    checkDate.setDate(weekStart.getDate() + i);
-    const checkDateStr = checkDate.toISOString().split('T')[0];
-    if (!completedDates.includes(checkDateStr)) {
-      missedDays++;
+    let completedThisWeek = 0;
+    let missedDays = 0;
+
+    for (let i = 0; i < 7; i++) {
+        const day = new Date(weekStart);
+        day.setDate(weekStart.getDate() + i);
+
+        // Don't count future days as missed
+        if (day > referenceDate) break;
+
+        const iso = day.toISOString().split('T')[0];
+
+        if (completionSet.has(iso)) {
+            completedThisWeek++;
+        } else {
+            missedDays++;
+        }
     }
-  }
 
-  // Streak calculation: consecutive completions up to today
-  let streak = 0;
-  let dayCursor = new Date(referenceDate);
-  while (completedDates.includes(dayCursor.toISOString().split('T')[0])) {
-    streak++;
-    dayCursor.setDate(dayCursor.getDate() - 1);
-  }
-
-  return {
-    completedThisWeek: completedThisWeek.length,
-    missedDays,
-    streak
-  };
+    return {
+        completedThisWeek,
+        missedDays,
+        streak: getStreak(habit)  // reuse your existing streak helper
+    };
 }
 
 

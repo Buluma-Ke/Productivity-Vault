@@ -439,3 +439,46 @@ button.start{
     color: #667085;
     margin-left: 0.3rem;
 }
+
+/* HABIT STATISTICS */
+
+.habit-stat-card {
+    background-color: #2a3040;
+    border-radius: 0.5em;
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 0.5rem;
+}
+.habit-stat-card__title {
+    margin: 0 0 0.25rem;
+    font-size: 0.85em;
+    color: #bfc6d4;
+    border-bottom: 1px solid #373F4E;
+    padding-bottom: 0.25rem;
+}
+.habit-stat-card__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8em;
+}
+.habit-stat-card__label {
+    color: #667085;
+}
+.habit-stat-card__value {
+    color: #bfc6d4;
+    font-weight: 500;
+}
+.habit-stat-card__value--missed {
+    color: #e06c6c;
+}
+.habit-stat-card__badge {
+    font-size: 0.75em;
+    background-color: rgba(216, 138, 77, 0.15);
+    color: #d88a4d;
+    border-radius: 0.3em;
+    padding: 0.1em 0.35em;
+    margin-left: 0.3rem;
+}
