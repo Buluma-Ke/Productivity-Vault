@@ -123,43 +123,65 @@ const todaysDate = today.toLocaleDateString('en-GB', {
     year  : 'numeric'
 });
 
-function renderHabitTrack(habit, container){
+
+function renderHabitTrack(habit, container) {
     const card = document.createElement("article");
     card.className = "habit-card";
 
-
-    card.innerHTML = `
-        <h4>${habit.title}</h4>
-        <button data-habit-id=${habit.id} class="complete-btn">Mark as complete</button>
-    `;
-
-
     const Wfrequency = document.createElement('p');
-    Wfrequency.textContent = `🎯Weekly:${habit.frequency}x`;
+    Wfrequency.textContent = `🎯 Weekly: ${habit.frequency}x`;
 
     const date = document.createElement('p');
-    date.textContent = `📆Today is: ${todaysDate}`;
+    date.textContent = `📆 Today is: ${todaysDate}`;
 
     const wrapper = document.createElement("div");
     wrapper.className = "habit-graph-wrapper";
 
+    // Fixed day labels on the left
+    const labels = document.createElement("div");
+    labels.className = "day-labels";
+    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
+        const span = document.createElement('span');
+        span.textContent = d;
+        labels.appendChild(span);
+    });
+
+    // Scrollable grid container
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "track-scroll";
+
     const grid = document.createElement("div");
     grid.className = "track-grid";
 
-    wrapper.appendChild(cloneDayLabels());
-    wrapper.appendChild(grid);
+    scrollContainer.appendChild(grid);
+    wrapper.appendChild(labels);
+    wrapper.appendChild(scrollContainer);
 
-    // card.appendChild(title);
-    // card.appendChild(button);
+    card.innerHTML = `<h4>${habit.title}</h4>`;
+    card.appendChild(document.createElement('button')).outerHTML; // placeholder
+    
+    // rebuild button properly
+    card.innerHTML = `
+        <h4>${habit.title}</h4>
+        <button data-habit-id="${habit.id}" class="complete-btn">Mark as complete</button>
+    `;
+
     card.appendChild(Wfrequency);
     card.appendChild(date);
-    card.appendChild(wrapper); // template
-
+    card.appendChild(wrapper);
 
     container.appendChild(card);
 
-    //Render tracking grid inside this card
     renderGrid(grid, habit);
+
+    // Scroll to start of current month
+    const today = new Date();
+    const startOfYear = new Date(today.getFullYear(), 0, 1);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const daysToMonth = Math.floor((startOfMonth - startOfYear) / 86400000);
+    const cellWidth = 16; // day cell width + gap
+    const cols = Math.floor(daysToMonth / 7);
+    scrollContainer.scrollLeft = cols * cellWidth;
 }
 
 
