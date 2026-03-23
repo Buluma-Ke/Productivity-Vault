@@ -58,8 +58,8 @@ habit-tracker/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/productivity-vault.git
-cd productivity-vault
+git clone https://github.com/Buluma-Ke/Productivity-Vault.git
+cd Productivity-Vault
 ```
 
 ### 2. Install dependencies
@@ -71,10 +71,10 @@ npm install
 ### 3. Start the app
 
 ```bash
-npm start
+npm run dev
 ```
 
-This boots the Express backend on http://localhost:3000 and serves the frontend on http://localhost:5500. Open http://localhost:5500 in your browser.
+This boots the Express backend and serves the frontend at http://localhost:3000. Open http://localhost:3000 in your browser.
 
 ---
 
@@ -85,7 +85,7 @@ This boots the Express backend on http://localhost:3000 and serves the frontend 
 Add this to your `~/.zshrc` or `~/.bashrc`:
 
 ```bash
-alias habittracker="cd /full/path/to/habit-tracker && npm start"
+alias habittracker="cd /full/path/to/habit-tracker && npm run dev"
 ```
 
 Reload your shell:
@@ -104,7 +104,7 @@ Now you can run `habittracker` from anywhere.
 ```bat
 @echo off
 cd /d C:\full\path\to\habit-tracker
-npm start
+npm run dev
 ```
 
 3. Add that folder to your PATH:

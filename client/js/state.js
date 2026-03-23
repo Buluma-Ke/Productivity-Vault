@@ -11,7 +11,7 @@ export const state = {
     // method to load state from server
     async load() {
         try {
-            const response = await fetch("http://localhost:3000/state");
+            const response = await fetch("/state");
             if (!response.ok) throw new Error("Server error");
 
             const data = await response.json();
@@ -20,6 +20,7 @@ export const state = {
             this.habits = data.habits;
             this.tasks = data.tasks;
             this.projects = data.projects;
+            this.habit_completions = data.habit_completions;
 
             return this; // optional, so you can chain or await
 
@@ -28,6 +29,7 @@ export const state = {
             this.habits = [];
             this.tasks = [];
             this.projects = [];
+            this.habit_completions = [];
             return this;
         }
     }
