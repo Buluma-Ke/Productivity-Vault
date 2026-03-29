@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const startDate = habitForm.startDate.value;
         const frequency = Number(habitForm.frequency.value);
 
-        addHabit({ title, startDate, frequency});
+        addHabit({ name: title, startDate, frequency});
 
         render();
         habitForm.reset();
