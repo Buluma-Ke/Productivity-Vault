@@ -9,9 +9,8 @@ app.use(express.json());
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("API is running");
+  res.sendFile(path.join(__dirname, "../client/index.html"));
 });
-
 // GET /state → loads all habits and tasks
 app.get("/state", async (req, res) => {
   const state = { habits: [], tasks: [], projects: [] };
@@ -207,3 +206,8 @@ app.post("/habits/:id/completions", (req, res) => {
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
 });
+
+
+const path = require("path");
+app.use(express.static(path.join(__dirname, "../client"))); 
+console.log("Serving static from:", path.join(__dirname, "../client"));
