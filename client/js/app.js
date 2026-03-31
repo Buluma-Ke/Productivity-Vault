@@ -11,15 +11,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function init() {
         try {
-            // Load state from server; state.load() already updates the state object
             await state.load();
-
+            console.log("habits:", state.habits);
+            console.log("tasks:", state.tasks);
+            console.log("projects:", state.projects);
         } catch (e) {
             console.error("Failed to load state:", e);
         }
 
-        // Render UI after state is populated
-        render();
+        render();  // <-- wrap this too
+        try {
+            render();
+        } catch(e) {
+            console.error("Render crashed:", e);  // will catch silent render errors
+        }
     }
 
     init();

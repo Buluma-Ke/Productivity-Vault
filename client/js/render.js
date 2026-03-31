@@ -39,6 +39,7 @@ export function hideHabitModal(){
 
 // Main render function
 export function render(){
+    console.log("render called with state:", JSON.stringify(state, null, 2));
     cacheDayLabelsTemplate(); // Cache template on first render
     renderHabits();
     renderGrid();

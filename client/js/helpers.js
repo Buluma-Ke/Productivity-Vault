@@ -17,41 +17,34 @@ export function saveVault(vault){
 
 // STREAKS COUNTER
 
-export function getStreak(habit){
-    if(!habit.completions.length) return 0;
+export function getStreak(habit) {
+    if (!habit.completions.length) return 0;
 
     const completionSet = new Set(habit.completions);
 
-    // Normalize today
-    let today = new Date();
-    today = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate()
-    );
-
+    // Create today fresh — don't reuse or mutate
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const todayISO = today.toISOString().split('T')[0];
 
-    // if today not completed -> immediate 0
-    if (!completionSet.has(todayISO)){
-        return 0;
-    }
+    if (!completionSet.has(todayISO)) return 0;
 
     let streak = 0;
-    let current = today;
+    let current = new Date(today); // ✅ separate copy, not a reference
 
-    while(true) {
+    while (true) {
         const iso = current.toISOString().split('T')[0];
 
-        if (completionSet.has(todayISO)){
+        if (completionSet.has(iso)) {  // ✅ check iso, not todayISO
             streak++;
+            current = new Date(current); // ✅ fresh copy each iteration
             current.setDate(current.getDate() - 1);
-        }else {
+        } else {
             break;
         }
     }
 
-    return streak
+    return streak;
 }
 
 // ---------------
