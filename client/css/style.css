@@ -177,7 +177,7 @@ header {
 }
 
 header h2 {
-    font-size: 0.7em;
+    font-size: 1em;
     letter-spacing: 0.08em;
     color: #667085;
     margin: 0 0 0.5rem;
@@ -308,7 +308,7 @@ header h2 {
     font-size: 0.7em;
 }
 .today {
-    background-color: #3f8efc;
+    background-color: #2a5f8f;
 }
 .habit-graph-wrapper {
     display: flex;
@@ -372,7 +372,7 @@ header h2 {
     border-radius: 1px;
 }
 .day-completed {
-    background-color: #d88a4d;
+    background-color: #1f4e5f;
 }
 
 /* NEW HABIT MODAL */
@@ -694,7 +694,7 @@ button.start--bored {
     color: #bfc6d4;
 }
 .calendar-day__header--today .calendar-day__number {
-    background-color: #3f8efc;
+    background-color: #2a5f8f;
     color: #fff;
     border-radius: 50%;
     width: 22px;
@@ -757,10 +757,6 @@ button.start--bored {
 .task-filter-btn:hover {
     color: #bfc6d4;
 }
-.task-filter-btn--active {
-    color: #3f8efc;
-    border-bottom: 1px solid #3f8efc;
-}
 
 .task-card--archived {
     opacity: 0.6;
@@ -782,10 +778,14 @@ button.start--bored {
 .project-filter-btn:hover {
     color: #bfc6d4;
 }
+
+.task-filter-btn--active,
 .project-filter-btn--active {
-    color: #3f8efc;
-    border-bottom: 2px solid #3f8efc;
+    color: #2a5f8f;
+    border-bottom-color: #2a5f8f;
 }
+
+
 .project-card--archived {
     opacity: 0.6;
     border-left: 2px solid #373F4E;
